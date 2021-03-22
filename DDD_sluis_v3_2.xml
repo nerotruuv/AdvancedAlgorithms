@@ -1,0 +1,643 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>
+// geeft aan hoelang het duurt vor deuren om hun transitie te maken
+const int SYSTEMS = 2;
+const int POS = 3 * SYSTEMS;     // pos geeft aan hoeveel deuren er zijn en elke dur voegt hiermee ook een sluis toe
+const int H_TIME = 2;            // tijd die het duurt om hatches dicht te doen
+const int G_TIME = 5;            // tijd die het duurt om gates dicht te doen
+const int MAX_IN_Q = 3;
+
+
+int[0,MAX_IN_Q] small_q_low = 0;
+int[0,MAX_IN_Q] small_q_high = 0;
+int[0,MAX_IN_Q] large_q_low = 0;
+int[0,MAX_IN_Q] large_q_high = 0;
+
+
+int[0,SYSTEMS] small_in_system = 0;
+int[0,SYSTEMS] large_in_system = 0;
+int[0,SYSTEMS] small_is_changing = 0;
+int[0,SYSTEMS] large_is_changing = 0;
+
+
+chan e_reset, e_pressed, h_close[POS], h_open[POS], g_close[POS], g_open[POS];
+//broadcast chan  e_reset;
+
+
+</declaration>
+	<template>
+		<name x="5" y="5">Gate</name>
+		<parameter>int[0,POS-1] pos</parameter>
+		<declaration>clock x;
+
+int[1,2] status;</declaration>
+		<location id="id0" x="-2006" y="-340">
+			<name x="-2065" y="-357">closing</name>
+		</location>
+		<location id="id1" x="-1836" y="-476">
+			<name x="-1853" y="-510">closed</name>
+		</location>
+		<location id="id2" x="-1666" y="-340">
+			<name x="-1649" y="-357">opening</name>
+		</location>
+		<location id="id3" x="-1836" y="-204">
+			<name x="-1853" y="-187">open</name>
+		</location>
+		<location id="id4" x="-1836" y="-340">
+			<name x="-1861" y="-314">paused</name>
+		</location>
+		<init ref="id1"/>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-1785" y="-348">e_pressed?</label>
+			<label kind="assignment" x="-1785" y="-331">status:=1</label>
+			<nail x="-1700" y="-306"/>
+			<nail x="-1802" y="-306"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-1776" y="-416">status==1</label>
+			<label kind="synchronisation" x="-1776" y="-399">e_reset?</label>
+			<nail x="-1802" y="-374"/>
+			<nail x="-1700" y="-374"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-1946" y="-348">status==2</label>
+			<label kind="synchronisation" x="-1946" y="-331">e_reset?</label>
+			<nail x="-1870" y="-306"/>
+			<nail x="-1972" y="-306"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-1955" y="-416">e_pressed?</label>
+			<label kind="assignment" x="-1955" y="-399">status:=2</label>
+			<nail x="-1972" y="-374"/>
+			<nail x="-1870" y="-374"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-1955" y="-238">g_close[pos]?</label>
+			<label kind="assignment" x="-1938" y="-221">x:=0</label>
+			<nail x="-2006" y="-204"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id3"/>
+			<label kind="guard" x="-1776" y="-229">x&gt;G_TIME</label>
+			<nail x="-1666" y="-204"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-1776" y="-510">g_open[pos]?</label>
+			<label kind="assignment" x="-1759" y="-493">x:=0</label>
+			<nail x="-1666" y="-476"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-1955" y="-501">x&gt;G_TIME</label>
+			<nail x="-2006" y="-476"/>
+		</transition>
+	</template>
+	<template>
+		<name>Queue</name>
+		<location id="id5" x="-2754" y="-510">
+		</location>
+		<init ref="id5"/>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id5"/>
+			<label kind="guard" x="-2881" y="-654">(small_q_high + large_q_high) &lt; MAX_IN_Q</label>
+			<label kind="assignment" x="-2745" y="-637">small_q_high++</label>
+			<nail x="-2754" y="-612"/>
+			<nail x="-2652" y="-612"/>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id5"/>
+			<label kind="guard" x="-2881" y="-408">(small_q_low + large_q_low) &lt; MAX_IN_Q</label>
+			<label kind="assignment" x="-2745" y="-391">small_q_low++</label>
+			<nail x="-2754" y="-408"/>
+			<nail x="-2652" y="-408"/>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id5"/>
+			<label kind="guard" x="-2881" y="-654">(small_q_high + large_q_high) &lt; MAX_IN_Q</label>
+			<label kind="assignment" x="-2856" y="-637">large_q_high++</label>
+			<nail x="-2754" y="-612"/>
+			<nail x="-2856" y="-612"/>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id5"/>
+			<label kind="guard" x="-2881" y="-408">(small_q_low + large_q_low) &lt; MAX_IN_Q</label>
+			<label kind="assignment" x="-2856" y="-391">large_q_low++</label>
+			<nail x="-2754" y="-408"/>
+			<nail x="-2856" y="-408"/>
+		</transition>
+	</template>
+	<template>
+		<name>Logic</name>
+		<parameter>int[0,POS-1] low, int[0,POS-1] mid, int[0,POS-1] high</parameter>
+		<declaration>int[1,2] type_in; // 1 is small en 2 is large
+
+bool changing = false;
+int[1,2] change_type;
+
+void r_q_s_low(){
+    if(small_q_low &gt; 0 &amp;&amp; small_in_system &gt; 0){
+        small_q_low--;
+        small_in_system--;
+    }
+}
+void r_q_l_low(){
+    if(large_q_low &gt; 0 &amp;&amp; large_in_system &gt; 0){
+        large_q_low--;
+        large_in_system--;
+    }
+}
+void r_q_s_high(){
+    if(small_q_high &gt; 0 &amp;&amp; small_in_system &gt; 0){
+        small_q_high--;
+        small_in_system--;
+    }
+}
+void r_q_l_high(){
+    if(large_q_high &gt; 0 &amp;&amp; large_in_system &gt; 0){
+        large_q_high--;
+        large_in_system--;
+    }
+}
+
+void r_q_high(){
+    if(type_in == 2){
+        r_q_l_high();
+    }else if(type_in == 1){
+        r_q_s_high();
+    }
+}
+void r_q_low(){
+    if(type_in == 2){
+        r_q_l_low();
+    }else if(type_in == 1){
+        r_q_s_low();
+    }
+}
+
+/*-----------------------------*/
+void enter_low(){ //check priority
+    if(large_q_low &gt; 0){
+        type_in = 2;
+        large_in_system++;
+    }else if(small_q_low &gt; 0){
+        type_in = 1;
+        small_in_system++;
+    }
+}
+
+void enter_high(){ //check priority
+    if(large_q_high &gt; 0){
+        type_in = 2;
+        large_in_system++;
+    }else if(small_q_high &gt; 0){
+        type_in = 1;
+        small_in_system++;
+    }
+}
+/*-----------------------------*/
+
+void change_small(){
+    if(!changing){
+        changing = true;
+        change_type = 1;
+        type_in = 1;
+        small_is_changing++;
+    }else if(changing){
+        changing = false;
+        small_is_changing--;
+    }
+}
+
+void change_large(){
+    if(!changing){
+        changing = true;
+        change_type = 2;
+        type_in = 2;
+        large_is_changing++;
+    }else if(changing){
+        changing = false;
+        large_is_changing--;
+    }
+}
+
+bool check_low_large(){
+    if((small_q_high + large_q_high ) &lt;= 0){
+        if(large_q_low &gt; (0 + large_is_changing)){
+            return true;
+        }return false;
+    }return false;
+}
+
+bool check_low_small(){
+    if((small_q_high + large_q_high ) &lt;= 0){
+        if(small_q_low &gt; (0 + small_is_changing)){
+            return true;
+        }return false;
+    }return false;
+}
+
+bool check_high_large(){
+    if((small_q_low + large_q_low ) &lt;= 0){
+        if(large_q_high &gt; (0 + large_is_changing)){
+            return true;
+        }return false;
+    }return false;
+}
+
+bool check_high_small(){
+    if((small_q_low + large_q_low ) &lt;= 0){
+        if(small_q_high &gt; (0 + small_is_changing)){
+            return true;
+        }return false;
+    }return false;
+}
+
+
+
+
+
+</declaration>
+		<location id="id6" x="-47736" y="-408">
+			<name x="-47838" y="-399">entrance_low</name>
+		</location>
+		<location id="id7" x="-47634" y="-238">
+		</location>
+		<location id="id8" x="-47634" y="-510">
+		</location>
+		<location id="id9" x="-47498" y="-510">
+		</location>
+		<location id="id10" x="-47345" y="-510">
+		</location>
+		<location id="id11" x="-47090" y="-510">
+			<name x="-47192" y="-535">entrance_high</name>
+		</location>
+		<location id="id12" x="-46818" y="-510">
+		</location>
+		<location id="id13" x="-47090" y="-612">
+			<name x="-47141" y="-654">switch_to_large</name>
+		</location>
+		<location id="id14" x="-46818" y="-374">
+		</location>
+		<location id="id15" x="-46818" y="-238">
+		</location>
+		<location id="id16" x="-46920" y="-612">
+		</location>
+		<location id="id17" x="-47090" y="-238">
+		</location>
+		<location id="id18" x="-47362" y="-238">
+			<name x="-47379" y="-221">CCC</name>
+		</location>
+		<location id="id19" x="-47498" y="-204">
+		</location>
+		<location id="id20" x="-46954" y="-272">
+		</location>
+		<init ref="id19"/>
+		<transition>
+			<source ref="id20"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="-47056" y="-297">h_close[mid]!</label>
+			<nail x="-47056" y="-272"/>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id11"/>
+			<label kind="guard" x="-47328" y="-450">changing &amp;&amp; change_type == 2</label>
+			<label kind="synchronisation" x="-47277" y="-552">g_open[high]!</label>
+			<label kind="assignment" x="-47285" y="-433">change_large()</label>
+			<nail x="-47345" y="-408"/>
+			<nail x="-47124" y="-408"/>
+			<nail x="-47124" y="-510"/>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id11"/>
+			<label kind="guard" x="-47328" y="-501">changing &amp;&amp; change_type == 1</label>
+			<label kind="synchronisation" x="-47277" y="-552">g_open[high]!</label>
+			<label kind="assignment" x="-47285" y="-484">change_small()</label>
+			<nail x="-47345" y="-459"/>
+			<nail x="-47124" y="-459"/>
+			<nail x="-47124" y="-510"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id6"/>
+			<label kind="guard" x="-47940" y="-348">changing &amp;&amp; change_type == 1</label>
+			<label kind="synchronisation" x="-47727" y="-348">g_open[low]!</label>
+			<label kind="assignment" x="-47838" y="-331">change_small()</label>
+			<nail x="-47736" y="-238"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id6"/>
+			<label kind="guard" x="-47625" y="-348">changing &amp;&amp; change_type == 2</label>
+			<label kind="synchronisation" x="-47727" y="-348">g_open[low]!</label>
+			<label kind="assignment" x="-47625" y="-331">change_large()</label>
+			<nail x="-47634" y="-374"/>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id12"/>
+			<label kind="guard" x="-47226" y="-408">check_low_small() &amp;&amp; large_q_low &lt;= (0 + large_is_changing)</label>
+			<label kind="assignment" x="-47056" y="-425">change_small()</label>
+			<nail x="-47090" y="-408"/>
+			<nail x="-46852" y="-408"/>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id12"/>
+			<label kind="guard" x="-47056" y="-493">check_low_large()</label>
+			<label kind="assignment" x="-47056" y="-476">change_large()</label>
+			<nail x="-47090" y="-459"/>
+			<nail x="-46852" y="-459"/>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id8"/>
+			<label kind="guard" x="-48220" y="-476">check_high_small() &amp;&amp; large_q_high &lt;= (0 + large_is_changing)</label>
+			<label kind="synchronisation" x="-47897" y="-442">g_close[mid]!</label>
+			<label kind="assignment" x="-47914" y="-459">change_small()</label>
+			<nail x="-47805" y="-408"/>
+			<nail x="-47805" y="-510"/>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id8"/>
+			<label kind="guard" x="-47744" y="-603">check_high_large()</label>
+			<label kind="assignment" x="-47736" y="-620">change_large()</label>
+			<nail x="-47736" y="-578"/>
+			<nail x="-47634" y="-578"/>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-47608" y="-204">g_open[mid]!</label>
+			<nail x="-47600" y="-204"/>
+		</transition>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id19"/>
+			<label kind="guard" x="-47472" y="-204">type_in == 1</label>
+			<label kind="synchronisation" x="-47472" y="-187">h_close[low]!</label>
+			<label kind="comments" x="-47914" y="-212">hier moet alles langs met de start</label>
+			<nail x="-47387" y="-204"/>
+		</transition>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id7"/>
+			<label kind="guard" x="-47472" y="-314">type_in == 2</label>
+			<label kind="synchronisation" x="-47472" y="-297">h_close[low]!</label>
+			<nail x="-47396" y="-272"/>
+			<nail x="-47600" y="-272"/>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id20"/>
+			<label kind="guard" x="-46937" y="-314">type_in == 1</label>
+			<label kind="synchronisation" x="-46937" y="-297">h_open[mid]!</label>
+			<nail x="-46852" y="-272"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id18"/>
+			<label kind="synchronisation" x="-47294" y="-229">h_open[low]!</label>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id17"/>
+			<label kind="guard" x="-46988" y="-204">type_in == 2</label>
+			<nail x="-46852" y="-204"/>
+			<nail x="-47056" y="-204"/>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="-46903" y="-637">h_close[mid]!</label>
+			<nail x="-46818" y="-612"/>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id15"/>
+			<label kind="synchronisation" x="-46809" y="-323">h_close[high]!</label>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id14"/>
+			<label kind="synchronisation" x="-46801" y="-476">g_close[high]!</label>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id12"/>
+			<label kind="guard" x="-47081" y="-595">(type_in == 2 &amp;&amp; large_q_high &gt; 0) || 
+(small_q_high &gt; (0 + small_in_system)
+&amp;&amp; large_q_high &lt;= 0)</label>
+			<label kind="assignment" x="-47005" y="-535">enter_high()</label>
+			<label kind="comments" x="-47421" y="-646">dit is als er niet gewisseld moet worden</label>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id16"/>
+			<label kind="synchronisation" x="-47039" y="-637">g_open[mid]!</label>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id13"/>
+			<label kind="guard" x="-47447" y="-612">type_in == 1 &amp;&amp; large_q_high &gt; (0 + large_in_system)</label>
+			<label kind="synchronisation" x="-47183" y="-595">h_open[mid]!</label>
+			<label kind="assignment" x="-47175" y="-578">enter_high()</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id11"/>
+			<label kind="guard" x="-47277" y="-569">!changing</label>
+			<label kind="synchronisation" x="-47277" y="-552">g_open[high]!</label>
+			<label kind="assignment" x="-47277" y="-535">r_q_low()</label>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="-47464" y="-535">h_open[high]!</label>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-47608" y="-535">g_close[low]!</label>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id8"/>
+			<label kind="guard" x="-47583" y="-459">small_q_low &gt; (0 + small_in_system) 
+&amp;&amp; large_q_low &lt;= 0</label>
+			<label kind="synchronisation" x="-47574" y="-425">g_close[mid]!</label>
+			<label kind="assignment" x="-47668" y="-484">enter_low()</label>
+			<label kind="comments" x="-47583" y="-399">deze is voor klein</label>
+			<nail x="-47583" y="-408"/>
+			<nail x="-47583" y="-484"/>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id8"/>
+			<label kind="guard" x="-47583" y="-476">large_q_low &gt; (0 + large_in_system)</label>
+			<label kind="assignment" x="-47668" y="-484">enter_low()</label>
+			<nail x="-47685" y="-408"/>
+			<nail x="-47685" y="-484"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id6"/>
+			<label kind="guard" x="-47719" y="-365">!changing</label>
+			<label kind="synchronisation" x="-47727" y="-348">g_open[low]!</label>
+			<label kind="assignment" x="-47719" y="-331">r_q_high()</label>
+			<nail x="-47634" y="-306"/>
+			<nail x="-47736" y="-306"/>
+		</transition>
+	</template>
+	<template>
+		<name>Hatch</name>
+		<parameter>int[0,POS-1] pos</parameter>
+		<declaration>clock x;
+
+bool was_open = false;</declaration>
+		<location id="id21" x="-2312" y="-782">
+			<name x="-2286" y="-799">closed</name>
+		</location>
+		<location id="id22" x="-2618" y="-782">
+			<name x="-2686" y="-799">closing</name>
+		</location>
+		<location id="id23" x="-2312" y="-476">
+			<name x="-2286" y="-493">opening</name>
+		</location>
+		<location id="id24" x="-2618" y="-476">
+			<name x="-2677" y="-493">open</name>
+		</location>
+		<init ref="id21"/>
+		<transition>
+			<source ref="id21"/>
+			<target ref="id23"/>
+			<label kind="guard" x="-2235" y="-646">was_open == true</label>
+			<label kind="synchronisation" x="-2235" y="-629">e_reset?</label>
+			<label kind="assignment" x="-2235" y="-612">x:=0,was_open = false</label>
+			<nail x="-2244" y="-714"/>
+			<nail x="-2244" y="-544"/>
+		</transition>
+		<transition>
+			<source ref="id22"/>
+			<target ref="id23"/>
+			<label kind="synchronisation" x="-2448" y="-731">e_reset?</label>
+			<label kind="assignment" x="-2448" y="-714">x:=0, was_open = false</label>
+			<nail x="-2517" y="-748"/>
+			<nail x="-2346" y="-578"/>
+		</transition>
+		<transition>
+			<source ref="id24"/>
+			<target ref="id22"/>
+			<label kind="synchronisation" x="-2609" y="-535">h_close[pos]?</label>
+			<label kind="assignment" x="-2609" y="-518">x:=0</label>
+		</transition>
+		<transition>
+			<source ref="id23"/>
+			<target ref="id22"/>
+			<label kind="synchronisation" x="-2584" y="-586">e_pressed?</label>
+			<label kind="assignment" x="-2601" y="-569">x:=0, was_open = true</label>
+			<nail x="-2414" y="-510"/>
+			<nail x="-2584" y="-680"/>
+		</transition>
+		<transition>
+			<source ref="id24"/>
+			<target ref="id22"/>
+			<label kind="synchronisation" x="-2771" y="-629">e_pressed?</label>
+			<label kind="assignment" x="-2830" y="-612">x:=0, was_open = true</label>
+			<nail x="-2686" y="-544"/>
+			<nail x="-2686" y="-714"/>
+		</transition>
+		<transition>
+			<source ref="id23"/>
+			<target ref="id24"/>
+			<label kind="guard" x="-2516" y="-501">x&gt;H_TIME</label>
+		</transition>
+		<transition>
+			<source ref="id21"/>
+			<target ref="id23"/>
+			<label kind="synchronisation" x="-2405" y="-671">h_open[pos]?</label>
+			<label kind="assignment" x="-2346" y="-654">x:=0</label>
+		</transition>
+		<transition>
+			<source ref="id22"/>
+			<target ref="id21"/>
+			<label kind="guard" x="-2405" y="-807">x&gt;H_TIME</label>
+		</transition>
+	</template>
+	<template>
+		<name>Emergency_stop</name>
+		<location id="id25" x="-578" y="-306">
+			<name x="-620" y="-340">armed</name>
+		</location>
+		<location id="id26" x="-408" y="-306">
+			<name x="-408" y="-340">stop</name>
+		</location>
+		<init ref="id25"/>
+		<transition>
+			<source ref="id26"/>
+			<target ref="id25"/>
+			<label kind="synchronisation" x="-518" y="-399">e_reset!</label>
+			<nail x="-442" y="-374"/>
+			<nail x="-544" y="-374"/>
+		</transition>
+		<transition>
+			<source ref="id25"/>
+			<target ref="id26"/>
+			<label kind="synchronisation" x="-527" y="-238">e_pressed!</label>
+			<nail x="-544" y="-238"/>
+			<nail x="-442" y="-238"/>
+		</transition>
+	</template>
+	<system>/*
+system front_gate, mid_gate, back_gate, 
+front_hatch, mid_hatch, back_hatch,
+Emergency_stop, Alarm, Logic;
+*/
+
+G0 = Gate(0);
+G1 = Gate(1);
+G2 = Gate(2);
+H0 = Hatch(0);
+H1 = Hatch(1);
+H2 = Hatch(2);
+L1 = Logic(0,1,2);
+
+
+G3 = Gate(3);
+G4 = Gate(4);
+G5 = Gate(5);
+H3 = Hatch(3);
+H4 = Hatch(4);
+H5 = Hatch(5);
+L2 = Logic(3,4,5);
+
+system G0, G1, G2, H0, H1, H2, G3, G4, G5, H3, H4, H5,  L1, L2, Emergency_stop, Queue;</system>
+	<queries>
+		<query>
+			<formula>A[] not deadlock</formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>
