@@ -13,24 +13,64 @@ int[1,2]
 		<location id="id0" x="-170" y="-102">
 			<name x="-238" y="-119">Closed</name>
 		</location>
-		<location id="id1" x="102" y="-102">
-			<name x="119" y="-127">Opening</name>
-			<label kind="invariant" x="119" y="-102">x&gt;=hatch_timer</label>
+		<location id="id1" x="170" y="-102">
+			<name x="187" y="-127">Opening</name>
+			<label kind="invariant" x="187" y="-102">x&gt;=hatch_timer</label>
 		</location>
-		<location id="id2" x="102" y="102">
-			<name x="119" y="85">Open</name>
+		<location id="id2" x="170" y="102">
+			<name x="187" y="85">Open</name>
 		</location>
 		<location id="id3" x="-170" y="102">
 			<name x="-238" y="85">Closing</name>
 			<label kind="invariant" x="-280" y="102">x&gt;=hatch_timer</label>
 		</location>
-		<location id="id4" x="-68" y="0">
+		<location id="id4" x="0" y="34">
+			<committed/>
+		</location>
+		<location id="id5" x="0" y="-34">
 			<committed/>
 		</location>
 		<init ref="id0"/>
 		<transition>
+			<source ref="id5"/>
+			<target ref="id1"/>
+			<label kind="assignment" x="34" y="-34">x:=0</label>
+			<nail x="68" y="-34"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-161" y="-51">e_arm?</label>
+			<nail x="-69" y="-34"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-161" y="-51">e_arm?</label>
+			<nail x="-68" y="-34"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id3"/>
+			<label kind="assignment" x="-68" y="8">x:=0</label>
+			<nail x="-68" y="34"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="102" y="17">e_stop?</label>
+			<nail x="68" y="34"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="102" y="17">e_stop?</label>
+			<nail x="68" y="34"/>
+		</transition>
+		<transition>
 			<source ref="id3"/>
 			<target ref="id0"/>
+			<label kind="guard" x="-272" y="-17">x&gt;=hatch_timer</label>
 		</transition>
 		<transition>
 			<source ref="id2"/>
@@ -40,6 +80,7 @@ int[1,2]
 		<transition>
 			<source ref="id1"/>
 			<target ref="id2"/>
+			<label kind="guard" x="178" y="-17">x&gt;=hatch_timer</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
@@ -50,24 +91,24 @@ int[1,2]
 	<template>
 		<name>emergency_stop</name>
 		<declaration>clock x;</declaration>
-		<location id="id5" x="-272" y="-102">
+		<location id="id6" x="-272" y="-102">
 			<name x="-314" y="-136">ready</name>
 		</location>
-		<location id="id6" x="-102" y="-102">
+		<location id="id7" x="-102" y="-102">
 			<name x="-102" y="-136">stopped</name>
 		</location>
-		<init ref="id5"/>
+		<init ref="id6"/>
 		<transition>
-			<source ref="id6"/>
-			<target ref="id5"/>
+			<source ref="id7"/>
+			<target ref="id6"/>
 			<label kind="guard" x="-204" y="-34">x&gt;=1</label>
 			<label kind="synchronisation" x="-204" y="-17">e_arm!</label>
 			<nail x="-136" y="-34"/>
 			<nail x="-238" y="-34"/>
 		</transition>
 		<transition>
-			<source ref="id5"/>
-			<target ref="id6"/>
+			<source ref="id6"/>
+			<target ref="id7"/>
 			<label kind="synchronisation" x="-212" y="-195">e_stop!</label>
 			<label kind="assignment" x="-212" y="-212">x:=0</label>
 			<nail x="-238" y="-170"/>
@@ -75,7 +116,7 @@ int[1,2]
 		</transition>
 	</template>
 	<system>
-system hatch;
+system hatch, emergency_stop;
     </system>
 	<queries>
 		<query>
