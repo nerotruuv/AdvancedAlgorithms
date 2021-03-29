@@ -8,84 +8,86 @@ chan e_stop, e_arm;</declaration>
 		<name x="5" y="5">hatch</name>
 		<declaration>clock x;
 
-int[1,2] 
+int[1,2] status;
 </declaration>
-		<location id="id0" x="-170" y="-102">
-			<name x="-238" y="-119">Closed</name>
+		<location id="id0" x="-170" y="-170">
+			<name x="-238" y="-187">Closed</name>
 		</location>
-		<location id="id1" x="170" y="-102">
-			<name x="187" y="-127">Opening</name>
-			<label kind="invariant" x="187" y="-102">x&gt;=hatch_timer</label>
+		<location id="id1" x="170" y="-170">
+			<name x="187" y="-195">Opening</name>
+			<label kind="invariant" x="187" y="-170">x&lt;hatch_timer</label>
 		</location>
-		<location id="id2" x="170" y="102">
-			<name x="187" y="85">Open</name>
+		<location id="id2" x="170" y="34">
+			<name x="187" y="17">Open</name>
 		</location>
-		<location id="id3" x="-170" y="102">
-			<name x="-238" y="85">Closing</name>
-			<label kind="invariant" x="-280" y="102">x&gt;=hatch_timer</label>
+		<location id="id3" x="-170" y="34">
+			<name x="-238" y="17">Closing</name>
+			<label kind="invariant" x="-280" y="34">x&lt;hatch_timer</label>
 		</location>
-		<location id="id4" x="0" y="34">
+		<location id="id4" x="0" y="-34">
 			<committed/>
 		</location>
-		<location id="id5" x="0" y="-34">
+		<location id="id5" x="0" y="-102">
 			<committed/>
 		</location>
 		<init ref="id0"/>
 		<transition>
 			<source ref="id5"/>
 			<target ref="id1"/>
-			<label kind="assignment" x="34" y="-34">x:=0</label>
-			<nail x="68" y="-34"/>
+			<label kind="assignment" x="34" y="-102">x:=0</label>
+			<nail x="68" y="-102"/>
 		</transition>
 		<transition>
 			<source ref="id0"/>
 			<target ref="id5"/>
-			<label kind="synchronisation" x="-161" y="-51">e_arm?</label>
-			<nail x="-69" y="-34"/>
+			<label kind="guard" x="-161" y="-102">status==1</label>
+			<label kind="synchronisation" x="-161" y="-119">e_arm?</label>
+			<nail x="-69" y="-102"/>
 		</transition>
 		<transition>
 			<source ref="id3"/>
 			<target ref="id5"/>
-			<label kind="synchronisation" x="-161" y="-51">e_arm?</label>
-			<nail x="-68" y="-34"/>
+			<label kind="guard" x="-161" y="-102">status==1</label>
+			<label kind="synchronisation" x="-161" y="-119">e_arm?</label>
+			<nail x="-68" y="-102"/>
 		</transition>
 		<transition>
 			<source ref="id4"/>
 			<target ref="id3"/>
-			<label kind="assignment" x="-68" y="8">x:=0</label>
-			<nail x="-68" y="34"/>
+			<label kind="assignment" x="-68" y="-60">x:=0</label>
+			<nail x="-68" y="-34"/>
 		</transition>
 		<transition>
 			<source ref="id2"/>
 			<target ref="id4"/>
-			<label kind="synchronisation" x="102" y="17">e_stop?</label>
-			<nail x="68" y="34"/>
+			<label kind="synchronisation" x="102" y="-51">e_stop?</label>
+			<nail x="68" y="-34"/>
 		</transition>
 		<transition>
 			<source ref="id1"/>
 			<target ref="id4"/>
-			<label kind="synchronisation" x="102" y="17">e_stop?</label>
-			<nail x="68" y="34"/>
+			<label kind="synchronisation" x="102" y="-51">e_stop?</label>
+			<nail x="68" y="-34"/>
 		</transition>
 		<transition>
 			<source ref="id3"/>
 			<target ref="id0"/>
-			<label kind="guard" x="-272" y="-17">x&gt;=hatch_timer</label>
+			<label kind="guard" x="-272" y="-85">x&gt;=hatch_timer</label>
 		</transition>
 		<transition>
 			<source ref="id2"/>
 			<target ref="id3"/>
-			<label kind="assignment" x="-68" y="102">x:=0</label>
+			<label kind="assignment" x="-68" y="34">x:=0, status:=2</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
 			<target ref="id2"/>
-			<label kind="guard" x="178" y="-17">x&gt;=hatch_timer</label>
+			<label kind="guard" x="178" y="-85">x&gt;=hatch_timer</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
 			<target ref="id1"/>
-			<label kind="assignment" x="-68" y="-127">x:=0</label>
+			<label kind="assignment" x="-68" y="-195">x:=0, status:=1</label>
 		</transition>
 	</template>
 	<template>
@@ -109,8 +111,8 @@ int[1,2]
 		<transition>
 			<source ref="id6"/>
 			<target ref="id7"/>
-			<label kind="synchronisation" x="-212" y="-195">e_stop!</label>
-			<label kind="assignment" x="-212" y="-212">x:=0</label>
+			<label kind="synchronisation" x="-204" y="-195">e_stop!</label>
+			<label kind="assignment" x="-204" y="-212">x:=0</label>
 			<nail x="-238" y="-170"/>
 			<nail x="-136" y="-170"/>
 		</transition>
