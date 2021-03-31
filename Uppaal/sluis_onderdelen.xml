@@ -3,485 +3,292 @@
 <nta>
 	<declaration>// Place global declarations here.
 
-//channels
-//chan opening;
-//maak een globale variabele om een deur state te onthouden
-//door_state d_state[MAX_DOORS];
 
-chan d_open;
-chan d_close;
+//-------------------------------- SLEUSDEUR -------------------------------------
 
-chan s_red_on;
-chan s_redgreen_on;
-chan s_green_on;
+//Maak een type int[0-x] aan voor 'íd_door' dat aantal deuren moet voorstellen.
+const int MAX_DOORS=2;
+typedef int[0, MAX_DOORS-1] type_id_door;
 
-chan e_stop;
-chan e_arm;
+//Maak kanalen aan om willekeurig met elke sluisdeur te kunnen communiceren.
+chan d_open[MAX_DOORS];
+chan d_close[MAX_DOORS];
 
+//Maak een constant aan voor de tijd dat kost om een sluisdeur te openen.
+const int door_timer = 60;
 
-bool emergancy_stop = false;
-
-//maak een type int[0-1] aan voor 'íd_door'
-const int MAX_DOORS=1;
-typedef int[0, MAX_DOORS-1] id_door;
-
-//maak een type int[0-4] aan voor 'door_states'
+//Maak een type int[0-4] aan voor 'door_states' dat aantal states moet voorstellen.
 const int MAX_DOOR_STATES=5;
 typedef int[0, MAX_DOOR_STATES-1] door_state;
 
-
-
-//maak een type int[0-1] aan voor 'id_outside_light'
-const int MAX_OUTSIDE_LIGHTS=1;
-typedef int[0, MAX_OUTSIDE_LIGHTS-1] id_outside_light;
-
-//maak een type int[0-4] aan voor 'outside_light_states'
-const int MAX_STATES_OUTSIDE_LIGHT=5;
-typedef int[0, MAX_STATES_OUTSIDE_LIGHT-1] outside_light_state;
+//---------------------------------------------------------------------------------
 
 
 
-//maak een type int[0-1] aan voor 'id_chamber_light'
-const int MAX_CHAMBER_LIGHTS=1;
-typedef int[0, MAX_CHAMBER_LIGHTS-1] id_chamber_light;
+//-------------------------------- SCHEEPVAARTSEIN --------------------------------
+//Maak een type int[0-MAXLIGHTS-1] aan voor 'id_outside_light' dat aantal
+//scheepvaartseinen moet voorstellen.
+const int MAX_LIGHTS=2;
+typedef int[0, MAX_LIGHTS-1] type_id_light;
 
-//maak een type int[0-3] aan voor 'chamber_light_states'
-const int MAX_STATES_CHAMBER_LIGHT=4;
-typedef int[0, MAX_STATES_CHAMBER_LIGHT-1] chamber_light_state;
+//Maak kanalen aan om willekeurig met elke scheepvaartsein te kunnen communiceren.
+chan s_prepare[MAX_LIGHTS];
+chan s_forbidden[MAX_LIGHTS];
 
+//---------------------------------------------------------------------------------
+
+
+
+//-------------------------------- NOODSTOP ---------------------------------------
+chan e_stop;
+chan e_arm;
+
+//---------------------------------------------------------------------------------
 
 
 //maak een lijst/stack aan met type outside_lights ---&gt; 'int[0,1]' van groote 2
-//id_outside_light outsideLights[2];
-
-void initiateEmergancyStop()
-{
-    emergancy_stop = true;
-}
-
-void armEmergencyStop()
-{
-    emergancy_stop = false;
-}</declaration>
-	<template>
-		<name>e_controller</name>
-		<location id="id0" x="-136" y="-68">
-		</location>
-		<init ref="id0"/>
-		<transition>
-			<source ref="id0"/>
-			<target ref="id0"/>
-			<label kind="synchronisation" x="-161" y="42">e_arm!</label>
-			<label kind="assignment" x="-204" y="59">armEmergencyStop()</label>
-			<nail x="-68" y="34"/>
-			<nail x="-204" y="34"/>
-		</transition>
-		<transition>
-			<source ref="id0"/>
-			<target ref="id0"/>
-			<label kind="synchronisation" x="-161" y="-221">e_stop!</label>
-			<label kind="assignment" x="-204" y="-204">initiateEmergancyStop()</label>
-			<nail x="-204" y="-170"/>
-			<nail x="-68" y="-170"/>
-		</transition>
-	</template>
-	<template>
-		<name>d_controller</name>
-		<declaration>void resumeProcess()
-{
-    emergancy_stop = false;
-}</declaration>
-		<location id="id1" x="-136" y="-68">
-		</location>
-		<init ref="id1"/>
-		<transition>
-			<source ref="id1"/>
-			<target ref="id1"/>
-			<label kind="synchronisation" x="-297" y="-85">d_close!</label>
-			<nail x="-238" y="0"/>
-			<nail x="-238" y="-136"/>
-		</transition>
-		<transition>
-			<source ref="id1"/>
-			<target ref="id1"/>
-			<label kind="synchronisation" x="-26" y="-85">d_open!</label>
-			<nail x="-34" y="-136"/>
-			<nail x="-34" y="0"/>
-		</transition>
-	</template>
-	<template>
-		<name>s_controller</name>
-		<location id="id2" x="0" y="0">
-		</location>
-		<init ref="id2"/>
-		<transition>
-			<source ref="id2"/>
-			<target ref="id2"/>
-			<label kind="synchronisation" x="-51" y="-127">s_redgreen_on!</label>
-			<nail x="-68" y="-102"/>
-			<nail x="68" y="-102"/>
-		</transition>
-		<transition>
-			<source ref="id2"/>
-			<target ref="id2"/>
-			<label kind="synchronisation" x="-178" y="-8">s_red_on!</label>
-			<nail x="-102" y="68"/>
-			<nail x="-102" y="-68"/>
-		</transition>
-		<transition>
-			<source ref="id2"/>
-			<target ref="id2"/>
-			<label kind="synchronisation" x="110" y="-8">s_green_on!</label>
-			<nail x="102" y="-68"/>
-			<nail x="102" y="68"/>
-		</transition>
-	</template>
+//id_outside_light outsideLights[2];</declaration>
 	<template>
 		<name>sluisdeur</name>
-		<parameter>id_door id_d</parameter>
+		<parameter>type_id_door id_door</parameter>
 		<declaration>//variabele die lokaal de deur state bijhoud
 clock x;
 
 door_state d_state = 0;</declaration>
-		<location id="id3" x="-612" y="0">
+		<location id="id0" x="-612" y="0">
 			<name x="-688" y="-8">E_STOP</name>
 		</location>
-		<location id="id4" x="-612" y="238">
-			<name x="-646" y="280">CLOSING</name>
-			<label kind="invariant" x="-637" y="297">x&lt;=60</label>
+		<location id="id1" x="-612" y="238">
+			<name x="-646" y="255">CLOSING</name>
+			<label kind="invariant" x="-654" y="272">x&lt;=door_timer</label>
 		</location>
-		<location id="id5" x="-612" y="-238">
-			<name x="-646" y="-306">OPENING</name>
-			<label kind="invariant" x="-637" y="-289">x&lt;=60</label>
+		<location id="id2" x="-612" y="-238">
+			<name x="-646" y="-289">OPENING</name>
+			<label kind="invariant" x="-654" y="-272">x&lt;=door_timer</label>
 		</location>
-		<location id="id6" x="-374" y="0">
+		<location id="id3" x="-374" y="0">
 			<name x="-348" y="-8">OPEN</name>
 		</location>
-		<location id="id7" x="-850" y="0">
+		<location id="id4" x="-850" y="0">
 			<name x="-935" y="-8">CLOSED</name>
-			<label kind="comments" x="-884" y="-408">* Added time into the model for opening doors
-* Created channels to communicate with the door
-* Created a mechanism that ignores door actions as long as emergency stop is active
-* e_arm? geimplementeerd</label>
+			<label kind="comments" x="-807" y="-399">*** Bij het indrukken van de noodstop dienen alle sluisdeuren 
+    per direct te stoppen met functioneren.
+*** Na het reseten van de noodstop dient de process waarmee
+    de sluisdeuren bezig waren te worden hervat.</label>
 		</location>
-		<init ref="id7"/>
+		<init ref="id4"/>
 		<transition>
-			<source ref="id7"/>
-			<target ref="id3"/>
-			<label kind="synchronisation" x="-731" y="-34">e_stop?</label>
+			<source ref="id4"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-722" y="-34">e_stop?</label>
 			<nail x="-782" y="-34"/>
 			<nail x="-680" y="-34"/>
 		</transition>
 		<transition>
-			<source ref="id3"/>
-			<target ref="id7"/>
-			<label kind="synchronisation" x="-833" y="42">e_arm?</label>
-			<label kind="assignment" x="-833" y="59">d_state:=0</label>
+			<source ref="id0"/>
+			<target ref="id4"/>
+			<label kind="guard" x="-833" y="34">d_state==0</label>
+			<label kind="synchronisation" x="-833" y="51">e_arm?</label>
 			<nail x="-680" y="34"/>
 			<nail x="-782" y="34"/>
 		</transition>
 		<transition>
-			<source ref="id3"/>
-			<target ref="id6"/>
-			<label kind="synchronisation" x="-450" y="-76">e_arm?</label>
-			<label kind="assignment" x="-450" y="-59">d_state:=2</label>
+			<source ref="id0"/>
+			<target ref="id3"/>
+			<label kind="guard" x="-450" y="-76">d_state==2</label>
+			<label kind="synchronisation" x="-450" y="-59">e_arm?</label>
 			<nail x="-544" y="-34"/>
 			<nail x="-442" y="-34"/>
 		</transition>
 		<transition>
-			<source ref="id6"/>
-			<target ref="id3"/>
+			<source ref="id3"/>
+			<target ref="id0"/>
 			<label kind="synchronisation" x="-544" y="8">e_stop?</label>
 			<nail x="-442" y="34"/>
 			<nail x="-544" y="34"/>
 		</transition>
 		<transition>
-			<source ref="id3"/>
-			<target ref="id4"/>
-			<label kind="synchronisation" x="-561" y="153">e_arm?</label>
-			<label kind="assignment" x="-561" y="170">d_state:=3,
-x:=0</label>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-569" y="153">d_state==3</label>
+			<label kind="synchronisation" x="-569" y="170">e_arm?</label>
+			<label kind="assignment" x="-569" y="187">x:=0</label>
 			<nail x="-578" y="68"/>
 			<nail x="-578" y="170"/>
 		</transition>
 		<transition>
-			<source ref="id3"/>
-			<target ref="id5"/>
-			<label kind="synchronisation" x="-722" y="-187">e_arm?</label>
-			<label kind="assignment" x="-722" y="-170">d_state:=1,
-x:=0</label>
+			<source ref="id0"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-714" y="-204">d_state==1</label>
+			<label kind="synchronisation" x="-714" y="-187">e_arm?</label>
+			<label kind="assignment" x="-714" y="-170">x:=0</label>
 			<nail x="-646" y="-68"/>
 			<nail x="-646" y="-170"/>
 		</transition>
 		<transition>
-			<source ref="id4"/>
-			<target ref="id3"/>
-			<label kind="synchronisation" x="-663" y="59">e_stop?</label>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-663" y="68">e_stop?</label>
 			<nail x="-646" y="170"/>
 			<nail x="-646" y="68"/>
 		</transition>
 		<transition>
-			<source ref="id5"/>
-			<target ref="id3"/>
-			<label kind="synchronisation" x="-595" y="-85">e_stop?</label>
+			<source ref="id2"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-595" y="-93">e_stop?</label>
+			<label kind="comments" x="-280" y="-238">Resuming the normal processing will 
+cause the sleusdeur to resume its 
+last process. This choice is made in
+order to not complicate the sluis logic.</label>
 			<nail x="-578" y="-170"/>
 			<nail x="-578" y="-76"/>
 		</transition>
 		<transition>
-			<source ref="id6"/>
-			<target ref="id4"/>
-			<label kind="synchronisation" x="-399" y="195">d_close?</label>
-			<label kind="assignment" x="-399" y="212">d_state++,
+			<source ref="id3"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-374" y="178">d_close[id_door]?</label>
+			<label kind="assignment" x="-374" y="195">d_state++,
 x:=0</label>
 			<nail x="-374" y="170"/>
 			<nail x="-442" y="238"/>
 		</transition>
 		<transition>
-			<source ref="id7"/>
-			<target ref="id5"/>
-			<label kind="synchronisation" x="-892" y="-238">d_open?</label>
-			<label kind="assignment" x="-892" y="-221">d_state++,
+			<source ref="id4"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-918" y="-238">d_open[id_door]?</label>
+			<label kind="assignment" x="-918" y="-221">d_state++,
 x:=0</label>
 			<nail x="-850" y="-170"/>
 			<nail x="-782" y="-238"/>
 		</transition>
 		<transition>
-			<source ref="id4"/>
-			<target ref="id7"/>
-			<label kind="assignment" x="-884" y="212">d_state:=0</label>
+			<source ref="id1"/>
+			<target ref="id4"/>
+			<label kind="assignment" x="-884" y="204">d_state:=0</label>
 			<nail x="-782" y="238"/>
 			<nail x="-850" y="170"/>
 		</transition>
 		<transition>
-			<source ref="id5"/>
-			<target ref="id6"/>
+			<source ref="id2"/>
+			<target ref="id3"/>
 			<label kind="assignment" x="-399" y="-221">d_state++</label>
 			<nail x="-442" y="-238"/>
 			<nail x="-374" y="-170"/>
 		</transition>
 	</template>
 	<template>
-		<name x="5" y="5">scheepvaartsein_buiten</name>
-		<parameter>id_outside_light id_outsideLight</parameter>
-		<declaration>//variabele die lokaal de outsideLight_state bijhoud
-outside_light_state outsideLight_state = 0;</declaration>
-		<location id="id8" x="-544" y="-306">
-			<name x="-620" y="-331">RedRed</name>
+		<name>scheepvaartsein</name>
+		<parameter>type_id_light id_light</parameter>
+		<declaration>clock x;</declaration>
+		<location id="id5" x="-102" y="-170">
+			<name x="-170" y="-204">REDREDorOFF</name>
 		</location>
-		<location id="id9" x="-544" y="-544">
-			<name x="-578" y="-578">RedGroen</name>
+		<location id="id6" x="204" y="0">
+			<name x="212" y="17">Green</name>
 		</location>
-		<location id="id10" x="-884" y="-170">
-			<name x="-935" y="-178">Red</name>
+		<location id="id7" x="-102" y="0">
+			<name x="-136" y="17">RedGreen</name>
+			<label kind="invariant" x="-144" y="34">x&lt;=door_timer</label>
 		</location>
-		<location id="id11" x="-204" y="-170">
-			<name x="-178" y="-178">Green</name>
+		<location id="id8" x="-408" y="0">
+			<name x="-450" y="17">Red</name>
 		</location>
-		<init ref="id10"/>
+		<init ref="id8"/>
 		<transition>
-			<source ref="id11"/>
+			<source ref="id5"/>
 			<target ref="id8"/>
-			<label kind="synchronisation" x="-306" y="-204">e_stop?</label>
-			<nail x="-374" y="-187"/>
-			<nail x="-510" y="-246"/>
+			<label kind="synchronisation" x="-467" y="-102">e_arm?</label>
+			<label kind="comments" x="-340" y="-450">*** Bij het indrukken van de noodstop dienen de scheepvaarseinen 
+    aan de buitenkant van de sluis / kolk ten alle tijden uit te 
+    staan / het sein 'buiten gebruik' aan te duiden.
+*** Bij het reseten van de noodstop dienen alle scheepvaartseinen 
+    het sein 'verboden voor doorvaart' aan te duiden.
+*** Tijdens het schutten van een schip dient het gebruikte 
+    scheepvaartseinen ten alle tijden het de volgende drie fases 
+    door te lopen: 'verboden voor doorvaart' -&gt; 'gereedmaken voor 
+    doorvaart' -&gt; 'vrij voor doorvaart' -&gt; 'verboden voor doorvaart'.
+*** Ten alle tijden dient bij een gesloten sluisdeur rood licht te 
+    worden afgegeven.</label>
+			<nail x="-408" y="-170"/>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="25" y="-102">e_stop?</label>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-127" y="-102">e_stop?</label>
 		</transition>
 		<transition>
 			<source ref="id8"/>
-			<target ref="id11"/>
-			<label kind="synchronisation" x="-518" y="-297">e_arm?</label>
-			<label kind="assignment" x="-535" y="-280">outsideLight_state:=2</label>
-			<nail x="-476" y="-306"/>
-			<nail x="-331" y="-246"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-280" y="-102">e_stop?</label>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-178" y="178">s_forbidden[id_light]?</label>
+			<nail x="204" y="170"/>
+			<nail x="-408" y="170"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id6"/>
+			<label kind="guard" x="0" y="0">x&gt;=door_timer</label>
 		</transition>
 		<transition>
 			<source ref="id8"/>
-			<target ref="id10"/>
-			<label kind="synchronisation" x="-612" y="-297">e_arm?</label>
-			<label kind="assignment" x="-688" y="-280">outsideLight_state:=0</label>
-			<nail x="-578" y="-246"/>
-			<nail x="-714" y="-187"/>
-		</transition>
-		<transition>
-			<source ref="id10"/>
-			<target ref="id8"/>
-			<label kind="synchronisation" x="-833" y="-204">e_stop?</label>
-			<nail x="-756" y="-246"/>
-			<nail x="-612" y="-306"/>
-		</transition>
-		<transition>
-			<source ref="id9"/>
-			<target ref="id8"/>
-			<label kind="synchronisation" x="-569" y="-493">e_stop?</label>
-			<nail x="-510" y="-476"/>
-			<nail x="-510" y="-374"/>
-		</transition>
-		<transition>
-			<source ref="id8"/>
-			<target ref="id9"/>
-			<label kind="synchronisation" x="-569" y="-374">e_arm?</label>
-			<label kind="assignment" x="-612" y="-357">outsideLight_state:=1</label>
-			<nail x="-578" y="-374"/>
-			<nail x="-578" y="-476"/>
-		</transition>
-		<transition>
-			<source ref="id10"/>
-			<target ref="id11"/>
-			<label kind="synchronisation" x="-586" y="-170">s_green_on?</label>
-			<label kind="assignment" x="-612" y="-153">outsideLight_state:=2</label>
-		</transition>
-		<transition>
-			<source ref="id11"/>
-			<target ref="id10"/>
-			<label kind="synchronisation" x="-595" y="-59">s_redgreen_on?</label>
-			<label kind="assignment" x="-612" y="-42">outsideLight_state:=0</label>
-			<nail x="-229" y="-144"/>
-			<nail x="-544" y="-68"/>
-			<nail x="-858" y="-144"/>
-		</transition>
-		<transition>
-			<source ref="id9"/>
-			<target ref="id10"/>
-			<label kind="synchronisation" x="-756" y="-391">s_red_on?</label>
-			<label kind="assignment" x="-773" y="-374">outsideLight_state:=0</label>
-		</transition>
-		<transition>
-			<source ref="id10"/>
-			<target ref="id9"/>
-			<label kind="synchronisation" x="-909" y="-476">s_redgreen_on?</label>
-			<label kind="assignment" x="-943" y="-459">outsideLight_state:=1</label>
-			<nail x="-884" y="-204"/>
-			<nail x="-782" y="-442"/>
-			<nail x="-578" y="-544"/>
-		</transition>
-		<transition>
-			<source ref="id11"/>
-			<target ref="id9"/>
-			<label kind="synchronisation" x="-425" y="-391">s_red_on?</label>
-			<label kind="assignment" x="-450" y="-374">outsideLight_state--</label>
-		</transition>
-		<transition>
-			<source ref="id9"/>
-			<target ref="id11"/>
-			<label kind="synchronisation" x="-263" y="-476">s_green_on?</label>
-			<label kind="assignment" x="-288" y="-459">outsideLight_state++</label>
-			<nail x="-510" y="-544"/>
-			<nail x="-306" y="-442"/>
-			<nail x="-204" y="-204"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-331" y="0">s_prepare[id_light]?</label>
 		</transition>
 	</template>
 	<template>
-		<name>scheepvaartsein_kolk</name>
-		<parameter>id_chamber_light id_chamberLight</parameter>
-		<declaration>//variabele die lokaal de in_light_state bijhoud
-chamber_light_state chamberLight_state = 0;</declaration>
-		<location id="id12" x="-544" y="-306">
-			<name x="-595" y="-331">OFF</name>
+		<name>e_controller</name>
+		<location id="id9" x="-136" y="-68">
 		</location>
-		<location id="id13" x="-544" y="-544">
-			<name x="-578" y="-578">RedGreen</name>
+		<init ref="id9"/>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-161" y="42">e_arm!</label>
+			<nail x="-68" y="34"/>
+			<nail x="-204" y="34"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-161" y="-221">e_stop!</label>
+			<nail x="-204" y="-170"/>
+			<nail x="-68" y="-170"/>
+		</transition>
+	</template>
+	<template>
+		<name>d_controller</name>
+		<location id="id10" x="-136" y="-68">
 		</location>
-		<location id="id14" x="-884" y="-170">
-			<name x="-935" y="-178">Red</name>
-		</location>
-		<location id="id15" x="-204" y="-170">
-			<name x="-178" y="-178">Green</name>
-		</location>
-		<init ref="id14"/>
+		<init ref="id10"/>
 		<transition>
-			<source ref="id15"/>
-			<target ref="id12"/>
-			<label kind="synchronisation" x="-306" y="-204">e_stop?</label>
-			<nail x="-374" y="-187"/>
-			<nail x="-510" y="-246"/>
+			<source ref="id10"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="-314" y="-85">d_close[0]!</label>
+			<nail x="-238" y="0"/>
+			<nail x="-238" y="-136"/>
 		</transition>
 		<transition>
-			<source ref="id12"/>
-			<target ref="id15"/>
-			<label kind="synchronisation" x="-518" y="-297">e_arm?</label>
-			<label kind="assignment" x="-535" y="-280">chamberLight_state:=2</label>
-			<nail x="-476" y="-306"/>
-			<nail x="-331" y="-246"/>
-		</transition>
-		<transition>
-			<source ref="id12"/>
-			<target ref="id14"/>
-			<label kind="synchronisation" x="-612" y="-297">e_arm?</label>
-			<label kind="assignment" x="-697" y="-280">chamberLight_state:=0</label>
-			<nail x="-578" y="-246"/>
-			<nail x="-714" y="-187"/>
-		</transition>
-		<transition>
-			<source ref="id14"/>
-			<target ref="id12"/>
-			<label kind="synchronisation" x="-833" y="-204">e_stop?</label>
-			<nail x="-756" y="-246"/>
-			<nail x="-612" y="-306"/>
-		</transition>
-		<transition>
-			<source ref="id13"/>
-			<target ref="id12"/>
-			<label kind="synchronisation" x="-569" y="-493">e_stop?</label>
-			<nail x="-510" y="-476"/>
-			<nail x="-510" y="-374"/>
-		</transition>
-		<transition>
-			<source ref="id12"/>
-			<target ref="id13"/>
-			<label kind="synchronisation" x="-569" y="-374">e_arm?</label>
-			<label kind="assignment" x="-612" y="-357">chamberLight_state:=1</label>
-			<nail x="-578" y="-374"/>
-			<nail x="-578" y="-476"/>
-		</transition>
-		<transition>
-			<source ref="id14"/>
-			<target ref="id15"/>
-			<label kind="synchronisation" x="-586" y="-170">s_green_on?</label>
-			<label kind="assignment" x="-612" y="-153">chamberLight_state:=2</label>
-		</transition>
-		<transition>
-			<source ref="id15"/>
-			<target ref="id14"/>
-			<label kind="synchronisation" x="-595" y="-59">s_redgreen_on?</label>
-			<label kind="assignment" x="-612" y="-42">chamberLight_state:=0</label>
-			<nail x="-229" y="-144"/>
-			<nail x="-544" y="-68"/>
-			<nail x="-858" y="-144"/>
-		</transition>
-		<transition>
-			<source ref="id13"/>
-			<target ref="id14"/>
-			<label kind="synchronisation" x="-756" y="-391">s_red_on?</label>
-			<label kind="assignment" x="-773" y="-374">chamberLight_state:=2</label>
-		</transition>
-		<transition>
-			<source ref="id14"/>
-			<target ref="id13"/>
-			<label kind="synchronisation" x="-909" y="-476">s_redgreen_on?</label>
-			<label kind="assignment" x="-943" y="-459">chamberLight_state:=1</label>
-			<nail x="-884" y="-204"/>
-			<nail x="-782" y="-442"/>
-			<nail x="-578" y="-544"/>
-		</transition>
-		<transition>
-			<source ref="id15"/>
-			<target ref="id13"/>
-			<label kind="synchronisation" x="-425" y="-391">s_red_on?</label>
-			<label kind="assignment" x="-450" y="-374">chamberLight_state--</label>
-		</transition>
-		<transition>
-			<source ref="id13"/>
-			<target ref="id15"/>
-			<label kind="synchronisation" x="-263" y="-476">s_green_on?</label>
-			<label kind="assignment" x="-288" y="-459">chamberLight_state++</label>
-			<nail x="-510" y="-544"/>
-			<nail x="-306" y="-442"/>
-			<nail x="-204" y="-204"/>
+			<source ref="id10"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="-26" y="-85">d_open[0]!</label>
+			<nail x="-34" y="-136"/>
+			<nail x="-34" y="0"/>
 		</transition>
 	</template>
 	<system>// Place template instantiations here.
 // Process = Template();
 // List one or more processes to be composed into a system.
-system scheepvaartsein_buiten, scheepvaartsein_kolk, sluisdeur, d_controller, s_controller, e_controller;
+// scheepvaartsein_buiten, scheepvaartsein_kolk, s_controller, 
+system sluisdeur, scheepvaartsein, d_controller, e_controller;
     </system>
 	<queries>
 		<query>
