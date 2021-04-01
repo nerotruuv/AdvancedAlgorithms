@@ -1,0 +1,54 @@
+================ Requirements voor sluisdeur =====================
+*** Bij het indrukken van de noodstop dienen alle sluisdeuren 
+    per direct te stoppen met functioneren.
+*** Na het reseten van de noodstop dient de process waarmee
+    de sluisdeuren mee bezig waren te worden hervat.
+
+
+================ Requirements voor scheepvaartsein ===============
+*** Bij het indrukken van de noodstop dienen de scheepvaartseinen 
+    aan de buitenkant van de sluis / kolk ten alle tijden uit te 
+    staan / het sein 'buiten gebruik' aan te duiden.
+*** Bij het reseten van de noodstop dienen alle scheepvaartseinen 
+    het sein 'verboden voor doorvaart' aan te duiden.
+*** Tijdens het schutten van een schip dient het gebruikte 
+    scheepvaartseinen ten alle tijden het de volgende drie 
+    fases door te lopen: 
+    'verboden voor doorvaart' -> 'gereedmaken voor doorvaart' -> 
+    'vrij voor doorvaart' -> 'verboden voor doorvaart'.
+*** Ten alle tijden dient bij een gesloten sluisdeur rood licht te 
+    worden afgegeven.
+
+================ Requirements voor ricketschuiven ================
+*** Wanneer de noodstop ingedrukt wordt moeten de ricketschuiven 
+    sluiten.
+*** Wanneer de noodstop gereset wordt moet de ricketschuiven naar
+    zijn originele positie worden gezet.
+
+================ Requirements voor de functionaliteiten ==========
+VEILIGHEID
+*** Ten alle tijden mag er maar één sluisdeur open zijn.
+*** Ten alle tijden mag een sluisdeur alleen open als de 
+    waterniveau aan beiden kanten van de sluisdeur gelijk is.
+*** Ten alle tijden mag een sluisdeur open alleen als de 
+    ricketschuiven gesloten zijn.
+*** Een boot kan alleen geschut worden als de waterniveau binnen de
+    sluis gelijk is aan de waterniveau waar de boot vandaan komt.
+*** Tijdens het navilleren van een boot dienen ten alle tijden de
+    sluisdeuren gesloten te zijn en scheepvaartseinen het sein 
+    'verboden voor doorvaart' aangeven.
+
+EFFICIENTIE
+*** Ten alle tijden dienen de deuren gesloten te zijn als er
+    geen boten aanwezig zijn aan een van de beiden kanten.
+    (*** Wanneer de boot zich bevind aan de kant ongelijk aan de 
+         waterstand binnen de sluis dan dient eerst het waterniveau
+         gelijk te worden gebracht.)
+    (*** Een boot kan geschut worden als de waterstand gelijk is 
+         aan die binnen de sluis.)
+*** Bij het openen van een sluisdeur dient een scheepvaartsein
+    'gereedmaken voor doorvaart' voor de betrefende richting te worden
+    aangegeven.
+*** Ten allen tijden dient een scheepvaartsein 'vrij voor doorvaart'
+    te worden afgegeven bij een sluisdeur die voor de betrefende 
+    richting geopent is.
