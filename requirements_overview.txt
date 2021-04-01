@@ -1,11 +1,14 @@
 ================ Requirements voor sluisdeur =====================
+VEILIGHEID
 *** Bij het indrukken van de noodstop dienen alle sluisdeuren 
     per direct te stoppen met functioneren.
+EFFICIENTIE/SIMPLIFICATIE MODEL
 *** Na het reseten van de noodstop dient de process waarmee
     de sluisdeuren mee bezig waren te worden hervat.
 
 
 ================ Requirements voor scheepvaartsein ===============
+VEILIGHEID
 *** Bij het indrukken van de noodstop dienen de scheepvaartseinen 
     aan de buitenkant van de sluis / kolk ten alle tijden uit te 
     staan / het sein 'buiten gebruik' aan te duiden.
@@ -19,11 +22,14 @@
 *** Ten alle tijden dient bij een gesloten sluisdeur rood licht te 
     worden afgegeven.
 
+
 ================ Requirements voor ricketschuiven ================
+VEILIGHEID
 *** Wanneer de noodstop ingedrukt wordt moeten de ricketschuiven 
     sluiten.
 *** Wanneer de noodstop gereset wordt moet de ricketschuiven naar
     zijn originele positie worden gezet.
+
 
 ================ Requirements voor de functionaliteiten ==========
 VEILIGHEID
