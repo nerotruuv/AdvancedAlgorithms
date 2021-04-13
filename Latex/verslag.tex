@@ -11,11 +11,11 @@
         \vskip2cm
         }
         {\bfseries\Large
-          R. Karajev (0851997), M. Steijger (0938713)\\
+          R. Karajev, M. Steijger\\
         }
         {
           \bfseries\normalsize
-          0851997, 0938713\\
+          0851997 0938713\\
           \vskip1cm
           \today\\
     }    
@@ -24,127 +24,131 @@
     \vfill
     \vfill
 \end{titlepage}
+
 \newpage
 \tableofcontents
 
+
+%==================================================================================
 \newpage
 \section{Inleiding}
-Zie hier een referentie naar Royce~\cite{royce1987managing} en nog een naar Clarke~\cite{modelchecking}\ldots 
+    Voor Tinlab Advanced Algorithms wordt het methode Model Checking gegeven. Dit
+    onderwerp wordt getoetst door middel van een eindopdracht. Voor deze opdracht 
+    moet een compleet geautomatiseerd model van een sluis worden gemaakt. Vervolgens 
+    is het de bedoeling dat op basis van opgestelde requirements bepaalde eigenschappen 
+    van het model geverifieerd worden. Het doel van dit verslag is het vastleggen 
+    van keuzes die tijdens het process zijn gemaakt, onderbouwing geven op die keuzes,
+    het presenteren van gemaakte model, uitleg geven over de werking van de model en
+    tot slot presenteren van geverifieerde eigenschappen.
 
-\subsection{Sketch}
-Veiligheid \\
-Capaciteit \\
-Beschikbaarheid \\
-Efficientie \\
-.. \\
-
+%----------------------------------------------------------------------------------
 \newpage
-\subsection{Requirements}
-\begin{description}
-\item [Requirement 1] Afmetingen van de schutsluis moeten zodanig groot zijn dat de grootste schip dat nu of in de toekomst
-gebruik maakt van de vaarweg de sluis kan paseren.
-\item [Requirement 2] De capaciteit schutsluis zodat tijdsverlies wordt voorkomen doort maximaal aantal schepen dat
-per tijdseenheid kan worden geschut.
-\item [Requirement 3] Ook bij kleinere schepen tijdsverslies moet gewoon toi zijn minimum worden gebracht biij mogelijke vaarweg met grote
-scheepvaartintensiteit.
-\item [Requirement 4] Op elke moment moeten schippers/schepen door middel van een lichtsignaal de beschikbaarheid van de gebruik
-van de schutsluit kunnen zien.
-\item [Requirement 5] Ten alle tijden dient een schip die gebestigd is in een schutkolk uitsluitend met gesloten sluisdeuren van het
-ene naar het ander water niveau te worden gebracht.
-\item [Requirement 6] Indien sluisdeuren aan één kant in de open toestand zich bevinden zonder dat er een schip
-in de schutkolk aanwezig is dient een lichtsignaal aan die kant te worden afgegeven dat aangeeft dat de schutsluis beschikbaar is voor gebruik.
-\item [Requirement 7] Indien sluisdeuren in de gesloten toestand zich bevinden of in de open toestand waarbij een schip nog
-aanwezig is in de schutkolk dient een lichtsignaal te worden afgegeven dat aangeeft dat de schutsluit niet beschikbaar is voor gebruik.
-\end{description}
+\section {Requirements}
+    Voor het ontwerpen van een sluis model is er als eerst gekeken naar een algemeen
+    opbouw van Julianasluis 2~\cite{bedienininstructie}. Op basis van deze opbouw is
+    er voor gekozen om een simplistische model ervan te bouwen met volgende
+    onderdelen:
+        \begin{itemize}
+            \item 2x sluisdeur
+            \item 2x scheepvaartsein per sluisdeur
+            \item 1x ricketschuif per sluisdeur
+            \item 1x noodstop
+            \item 1x controle kamer
+        \end{itemize}
+    
+    \noindent Voordat een model met opgenoemde onderdelen opgesteld wordt, wordt er als 
+    eerst naar een functionele omschrijving sluitprocess gekeken~\cite{functioneel}. 
+    Daaruit is een basis begrip verkregen van hoe zo'n sluis functioneert. In dit
+    document zijn ook aanvullende functionele eisen gevonden wat betreft het 
+    veiligheid. Deze eisen worden gebruikt als basis om te indentificeren welke 
+    risico's er tijdens een sluitprocess bestaan. Tot slot wordt met behulp van
+    deze informatie eigen veiligheideisen opgesteld.
+    
+    \subsection{Veiligheid}
+        \textit{Sluisdeuren}
+        \begin{itemize}
+            \item Sluisdeuren moet ten alle tijden tot een noodstop kunnen worden
+            gebracht.
+            \item Na het resetten van de noodstop dienen de sluisdeuren te hervatten
+            met de onderbroken process.
+            \item Ten alle tijden mag er maar één sluisdeur open zijn.
+            \item Een sluisdeur mag alleen open als de waterniveau aan beiden 
+            kanten van de sluisdeur gelijk is.
+            \item Ten alle tijden mag een deur alleen aangedreven worden als het
+            invaarsein het sein "verboden voor doorvaart" of "sperren" aangeeft.
+            \item Tijdens het nivelleren dienen ten alle tijden de sluisdeuren 
+            gesloten te zijn en scheepvaartseinen het sein 'verboden voor doorvaart' 
+            aangeven.
+        \end{itemize}
 
+        \noindent\textit{Ricketschuiven}
+        \begin{itemize}
+            \item Ricketschuiven moeten ten alle tijden tot een noodstop kunnen worden 
+            gebracht waarbij de ricketschuiven per direct dienen te sluiten.
+            \item Na het resetten van de noodstop dienen de ricketschuiven naar 
+            hun originele positie te worden gebracht.
+            \item Ten alle tijden mag er maar één ricketschuif open worden gemaakt.
+            \item Ten alle tijden mag een ricketschuif alleen open als de tegenovergestelde
+            sluisdeur gesloten is.
+            \item Ten alle tijden mag een ricketschuif alleen open als de ricketschuif
+            aan de tegenovergestelde sluisdeur gesloten is.
+        \end{itemize}
+
+        \noindent\textit{Scheepvaartseinen}
+        \begin{itemize}
+            \item Scheepvaartseinen kunnen ten alle tijden tot een noodstop worden
+            gebracht waarbij het sein 'buiten gebruik' aangegeven wordt.
+            \item Bij het resetten van de noodstop dienen de scheepvaartseinen
+            het sein 'verboden voor doorvaart' aan te geven.
+            \item Ten alle tijden mag er maar aan één kant een scheepvaartsein het sein
+            'vrij voor doorvaart' aangeven.
+            \item Ten alle tijden mag het scheepvaartsein "vrij voor doorvaart" alleen 
+            worden afgegeven als de betrokken sluisdeur volledig geopent is.
+        \end{itemize}
+
+        \noindent\textit{Noodstop}
+        \begin{itemize}
+            \item Ten alle tijden kan een noodstop worden ingeschakkeld.
+            \item Na het indrukken van de noodstop moet deze uiteindelijk gereset worden.
+        \end{itemize}
+
+    \newpage
+    \subsection{Efficientie}
+        \begin{itemize}
+            \item De schutting process mag niet langer dan 30 minuten duren.
+            \item Een boot kan alleen geschut worden als de waterniveau binnen de
+            sluis gelijk is aan de waterniveau waar de boot vandaan komt.
+        \end{itemize}
+%----------------------------------------------------------------------------------
 \newpage
-\subsection{specificaties}
+\section {Specificaties}
 
-\subsection{Het vier variabelen model}
-\subsubsection{Monitored variabelen}
-\subsubsection{Controlled variabelen}
-\subsubsection{Input variabelen}
-\subsubsection{Output variabelen}
 
-\subsection{Rampen}
+%----------------------------------------------------------------------------------
 
-\subsubsection{Ramp 1}
-\begin{description}
-\item[Beschrijving]
-\item[Datum en plaats] 
-\item[Oorzaak]
-  %Beschrijf wat er mis ging in termen van het vier variabelen model/requirements/specificaties
-\end{description}
 
-\subsubsection{Ramp 2}
-\begin{description}
-\item[Beschrijving]
-\item[Datum en plaats] 
-\item[Oorzaak]
-  %Beschrijf wat er mis ging in termen van het vier variabelen model/requirements/specificaties
-\end{description}
+\section {Modelcriteria op basis van Vaandragen}
 
-\subsubsection{Ramp 3}
-\begin{description}
-\item[Beschrijving]
-\item[Datum en plaats] 
-\item[Oorzaak]
-  %Beschrijf wat er mis ging in termen van het vier variabelen model/requirements/specificaties
-\end{description}
+%----------------------------------------------------------------------------------
 
-\subsubsection{Ramp 4}
-\subsubsection{Ramp 5}
-\subsubsection{Ramp 6}
 
-\section{Modellen}
+\section {Gemodelleerde onderdelen}
 
-\subsection{De Kripke structuur}
+%----------------------------------------------------------------------------------
 
-\subsection{Soorten modellen}
 
-\subsection{Tijd}
+\section {Werking model}
 
-\subsection{Guards en invarianten}
+%----------------------------------------------------------------------------------
 
-\subsection{Deadlock}
 
-\subsection{Zeno gedrag}
+\section {Geverifieeerde eigenschappen}
 
-\section{Logica}
+%----------------------------------------------------------------------------------
 
-\subsection{Propositielogica}
 
-\subsection{Predicatenlogica}
+%==================================================================================
 
-\subsection{Kwantoren}
-
-\subsection{Dualiteiten}
-
-\section{Computation tree logic}
-
-\subsection{De computation tree}
-
-\subsection{Operator: AG}
-
-\subsection{Operator: EG}
-
-\subsection{Operator: AF}
-
-\subsection{Operator: EF}
-
-\subsection{Operator: AX}
-
-\subsection{Operator: EX}
-
-\subsection{Operator: p U q}
-
-\subsection{Operator: p R q}
-
-\subsection{Fairness}
-
-\subsection{Liveness}
-
-\newpage
 
 \newpage
 \bibliography{references}
