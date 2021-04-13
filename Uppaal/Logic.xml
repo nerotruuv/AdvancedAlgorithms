@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// 
+const int systems = 1;
+const int hatch_timer = 5;
+const int door_timer = 5;
+const int pos = 2;
+
+const int max_in_q = 3;
+int[0,max_in_q] in_q_low = 2;
+int[0,max_in_q] in_q_high = 2;
+int[0,systems] in_system = 0;
+int[0,systems] is_changing = 0;
+
+chan e_stop, e_arm;
+chan hatch_close[pos], hatch_open[pos], door_close[pos], door_open[pos];</declaration>
+	<template>
+		<name x="5" y="5">Logic</name>
+		<parameter>int[0,pos-1] low, int[0,pos-1] high</parameter>
+		<declaration>bool changing = false;
+
+void remove_boat_low(){
+    if(in_q_low &gt; 0 &amp;&amp; in_system &gt; 0){
+        in_q_low--;
+        in_system--;
+    }
+}
+
+void remove_boat_high(){
+    if(in_q_high &gt; 0 &amp;&amp; in_system &gt; 0){
+        in_q_high--;
+        in_system--;
+    }
+}
+
+bool in_q_low_check(){
+    if(in_q_low &gt; (0 + in_system)){
+        return true;}
+    else {
+        return false;
+    }
+}    
+
+bool in_q_high_check(){
+    if(in_q_high &gt; (0 + in_system)){
+        return true;}
+    else {
+        return false;
+    }
+}    
+
+bool changing_low_check(){
+    if(in_q_low &lt;= 0 &amp;&amp; in_q_high &gt; (0 + is_changing)){
+        return true;}
+    else {
+        return false;
+    }
+}    
+
+bool changing_high_check(){
+    if(in_q_high &lt;= 0 &amp;&amp; in_q_low &gt; (0 + is_changing)){
+        return true;}
+    else {
+        return false;
+    }
+}    
+
+void changing_true(){
+    changing = true;
+    is_changing++;
+}
+
+void changing_false(){
+    changing = false;
+    is_changing--;
+}
+
+
+
+</declaration>
+		<location id="id0" x="-1632" y="-680">
+			<name x="-1691" y="-714">C_LHC</name>
+		</location>
+		<location id="id1" x="-1462" y="-680">
+			<name x="-1470" y="-663">LDO</name>
+			<label kind="comments" x="-1632" y="-901">New boat lower</label>
+		</location>
+		<location id="id2" x="-1292" y="-680">
+			<name x="-1309" y="-663">LDC</name>
+		</location>
+		<location id="id3" x="-1122" y="-680">
+			<name x="-1139" y="-663">UHO</name>
+		</location>
+		<location id="id4" x="-952" y="-680">
+			<name x="-969" y="-663">UHC</name>
+		</location>
+		<location id="id5" x="-782" y="-680">
+			<name x="-799" y="-663">UDO</name>
+			<label kind="comments" x="-816" y="-926">New boat upper</label>
+		</location>
+		<location id="id6" x="-612" y="-680">
+			<name x="-603" y="-714">UDC</name>
+		</location>
+		<location id="id7" x="-1462" y="-578">
+			<name x="-1479" y="-612">LHO</name>
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-1623" y="-841">changing</label>
+			<label kind="synchronisation" x="-1623" y="-824">door_open[low]!</label>
+			<label kind="assignment" x="-1623" y="-807">changing_false()</label>
+			<nail x="-1632" y="-782"/>
+			<nail x="-1496" y="-782"/>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id6"/>
+			<label kind="guard" x="-773" y="-841">changing_high_check()</label>
+			<label kind="synchronisation" x="-773" y="-824">door_close[high]!</label>
+			<label kind="assignment" x="-773" y="-807">changing_true()</label>
+			<nail x="-782" y="-782"/>
+			<nail x="-646" y="-782"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id5"/>
+			<label kind="guard" x="-943" y="-841">changing</label>
+			<label kind="synchronisation" x="-943" y="-824">door_open[high]!</label>
+			<label kind="assignment" x="-943" y="-807">changing_false()</label>
+			<nail x="-952" y="-782"/>
+			<nail x="-816" y="-782"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-1453" y="-841">changing_low_check()</label>
+			<label kind="synchronisation" x="-1453" y="-824">door_close[low]!</label>
+			<label kind="assignment" x="-1453" y="-807">changing_true()</label>
+			<nail x="-1462" y="-782"/>
+			<nail x="-1326" y="-782"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-1607" y="-578">hatch_close[low]!</label>
+			<nail x="-1632" y="-579"/>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-1428" y="-578">hatch_open[low]!</label>
+			<nail x="-612" y="-578"/>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id6"/>
+			<label kind="guard" x="-756" y="-739">in_q_high_check()</label>
+			<label kind="synchronisation" x="-756" y="-722">door_close[high]!</label>
+			<label kind="assignment" x="-756" y="-705">in_system++</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id5"/>
+			<label kind="guard" x="-935" y="-739">!changing</label>
+			<label kind="synchronisation" x="-935" y="-722">door_open[high]!</label>
+			<label kind="assignment" x="-935" y="-705">remove_boat_low()</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-1097" y="-705">hatch_close[high]!</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-1267" y="-705">hatch_open[high]!</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-1445" y="-739">in_q_low_check()</label>
+			<label kind="synchronisation" x="-1445" y="-722">door_close[low]!</label>
+			<label kind="assignment" x="-1445" y="-705">in_system++</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-1615" y="-739">!changing</label>
+			<label kind="synchronisation" x="-1615" y="-722">door_open[low]!</label>
+			<label kind="assignment" x="-1615" y="-705">remove_boat_high()</label>
+		</transition>
+	</template>
+	<template>
+		<name>Hatch</name>
+		<parameter>int[0,pos-1] pos</parameter>
+		<declaration>clock x;
+
+int[1,2] status;
+</declaration>
+		<location id="id8" x="-204" y="-136">
+			<name x="-255" y="-170">Closed</name>
+		</location>
+		<location id="id9" x="136" y="-136">
+			<name x="153" y="-161">Opening</name>
+			<label kind="invariant" x="153" y="-136">x&lt;=hatch_timer</label>
+		</location>
+		<location id="id10" x="136" y="68">
+			<name x="153" y="42">Open</name>
+		</location>
+		<location id="id11" x="-204" y="68">
+			<name x="-272" y="42">Closing</name>
+			<label kind="invariant" x="-314" y="59">x&lt;=hatch_timer</label>
+		</location>
+		<location id="id12" x="-34" y="-68">
+			<committed/>
+		</location>
+		<location id="id13" x="-34" y="0">
+			<committed/>
+		</location>
+		<init ref="id8"/>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id11"/>
+			<label kind="assignment" x="-93" y="0">x:=0</label>
+			<nail x="-102" y="0"/>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="68" y="-17">e_stop?</label>
+			<nail x="34" y="0"/>
+			<nail x="25" y="0"/>
+			<nail x="25" y="0"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="68" y="-17">e_stop?</label>
+			<nail x="34" y="0"/>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id12"/>
+			<label kind="guard" x="-195" y="-68">status==1</label>
+			<label kind="synchronisation" x="-195" y="-51">e_arm?</label>
+			<nail x="-102" y="-68"/>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id9"/>
+			<label kind="assignment" x="-16" y="-68">x:=0</label>
+			<nail x="34" y="-68"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id12"/>
+			<label kind="guard" x="-195" y="-68">status==1</label>
+			<label kind="synchronisation" x="-195" y="-51">e_arm?</label>
+			<nail x="-102" y="-68"/>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id8"/>
+			<label kind="guard" x="-314" y="-51">x&gt;=hatch_timer</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="-93" y="68">hatch_close[pos]?</label>
+			<label kind="assignment" x="-93" y="85">x:=0, status:=2</label>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id10"/>
+			<label kind="guard" x="144" y="-51">x&gt;=hatch_timer</label>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-93" y="-178">hatch_open[pos]?</label>
+			<label kind="assignment" x="-93" y="-161">x:=0, status:=1</label>
+		</transition>
+	</template>
+	<template>
+		<name>Emergency</name>
+		<declaration>clock x;</declaration>
+		<location id="id14" x="-170" y="-34">
+			<name x="-221" y="-68">Ready</name>
+		</location>
+		<location id="id15" x="0" y="-34">
+			<name x="0" y="-68">Stopped</name>
+		</location>
+		<init ref="id14"/>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id14"/>
+			<label kind="guard" x="-102" y="34">x&gt;=1</label>
+			<label kind="synchronisation" x="-102" y="51">e_arm!</label>
+			<nail x="-34" y="34"/>
+			<nail x="-136" y="34"/>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id15"/>
+			<label kind="synchronisation" x="-102" y="-144">e_stop!</label>
+			<label kind="assignment" x="-102" y="-127">x:=0</label>
+			<nail x="-136" y="-102"/>
+			<nail x="-34" y="-102"/>
+		</transition>
+	</template>
+	<template>
+		<name>Door</name>
+		<parameter>int[0,pos-1] pos</parameter>
+		<declaration>clock x;
+
+int[1,2] status;
+</declaration>
+		<location id="id16" x="-544" y="-170">
+			<name x="-569" y="-213">Closed</name>
+		</location>
+		<location id="id17" x="-374" y="-26">
+			<name x="-349" y="-51">Opening</name>
+			<label kind="invariant" x="-349" y="-26">x&lt;=door_timer</label>
+		</location>
+		<location id="id18" x="-544" y="110">
+			<name x="-536" y="76">Open</name>
+		</location>
+		<location id="id19" x="-714" y="-26">
+			<name x="-782" y="-26">Closing</name>
+			<label kind="invariant" x="-816" y="-51">x&lt;=door_timer</label>
+		</location>
+		<location id="id20" x="-544" y="-26">
+			<name x="-569" y="-94">Paused</name>
+		</location>
+		<init ref="id16"/>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="-654" y="-94">e_stop?</label>
+			<label kind="assignment" x="-654" y="-77">status:=1</label>
+			<nail x="-680" y="-77"/>
+			<nail x="-578" y="-77"/>
+		</transition>
+		<transition>
+			<source ref="id20"/>
+			<target ref="id19"/>
+			<label kind="guard" x="-654" y="-9">status==2</label>
+			<label kind="synchronisation" x="-654" y="8">e_arm?</label>
+			<nail x="-578" y="25"/>
+			<nail x="-680" y="25"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="-484" y="8">e_stop?</label>
+			<label kind="assignment" x="-484" y="-9">status:=1</label>
+			<nail x="-408" y="25"/>
+			<nail x="-510" y="25"/>
+		</transition>
+		<transition>
+			<source ref="id20"/>
+			<target ref="id17"/>
+			<label kind="guard" x="-484" y="-111">status==1</label>
+			<label kind="synchronisation" x="-484" y="-94">e_arm?</label>
+			<nail x="-510" y="-77"/>
+			<nail x="-408" y="-77"/>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id16"/>
+			<label kind="guard" x="-688" y="-196">x&gt;=door_timer</label>
+			<nail x="-714" y="-170"/>
+		</transition>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id19"/>
+			<label kind="synchronisation" x="-697" y="110">door_close[pos]?</label>
+			<label kind="assignment" x="-697" y="127">x:=0</label>
+			<nail x="-714" y="110"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id18"/>
+			<label kind="guard" x="-476" y="110">x&gt;=door_timer</label>
+			<nail x="-374" y="110"/>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="-510" y="-213">door_open[pos]?</label>
+			<label kind="assignment" x="-510" y="-196">x:=0</label>
+			<nail x="-374" y="-170"/>
+		</transition>
+	</template>
+	<template>
+		<name>Signals</name>
+		<parameter>int[0,pos-1] pos</parameter>
+		<declaration>clock x;</declaration>
+		<location id="id21" x="-34" y="136">
+			<name x="-59" y="161">RedRed</name>
+		</location>
+		<location id="id22" x="-204" y="-34">
+			<name x="-229" y="-68">Red</name>
+		</location>
+		<location id="id23" x="-34" y="-34">
+			<name x="-68" y="-68">RedGreen</name>
+			<label kind="invariant" x="-76" y="-85">x&lt;door_timer</label>
+		</location>
+		<location id="id24" x="136" y="-34">
+			<name x="136" y="-68">Green</name>
+		</location>
+		<init ref="id22"/>
+		<transition>
+			<source ref="id24"/>
+			<target ref="id22"/>
+			<nail x="68" y="-102"/>
+			<nail x="-136" y="-102"/>
+		</transition>
+		<transition>
+			<source ref="id21"/>
+			<target ref="id22"/>
+			<label kind="synchronisation" x="-263" y="8">e_arm?</label>
+			<nail x="-102" y="136"/>
+			<nail x="-204" y="34"/>
+		</transition>
+		<transition>
+			<source ref="id23"/>
+			<target ref="id24"/>
+			<label kind="guard" x="0" y="-59">x&gt;=door_timer</label>
+		</transition>
+		<transition>
+			<source ref="id22"/>
+			<target ref="id23"/>
+		</transition>
+		<transition>
+			<source ref="id24"/>
+			<target ref="id21"/>
+			<label kind="synchronisation" x="-17" y="85">e_stop?</label>
+			<nail x="34" y="68"/>
+			<nail x="-34" y="68"/>
+		</transition>
+		<transition>
+			<source ref="id23"/>
+			<target ref="id21"/>
+			<label kind="synchronisation" x="-17" y="85">e_stop?</label>
+		</transition>
+		<transition>
+			<source ref="id22"/>
+			<target ref="id21"/>
+			<label kind="synchronisation" x="-17" y="85">e_stop?</label>
+			<nail x="-102" y="68"/>
+			<nail x="-34" y="68"/>
+		</transition>
+	</template>
+	<system>D0 = Door(0);
+D1 = Door(1);
+
+H0 = Hatch(0);
+H1 = Hatch(1);
+
+S0 = Signals(0);
+S1 = Signals(1);
+
+L1 = Logic(0,1);
+
+system D0,D1,H0,H1,L1;//,,S0,S1,Emergency;
+    </system>
+	<queries>
+		<query>
+			<formula>A[] not deadlock</formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>
