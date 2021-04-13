@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+
+
+//-------------------------------- SLEUSDEUR -------------------------------------
+//Maak een type int[0-x] aan voor 'íd_door' dat aantal deuren moet voorstellen.
+const int MAX_DOORS = 1;
+typedef int[0, MAX_DOORS-1] type_id_door;
+
+//Maak kanalen aan om willekeurig met elke sluisdeur te kunnen communiceren.
+//chan d_open[MAX_DOORS];
+//chan d_close[MAX_DOORS];
+
+//Maak een constant aan voor de tijd dat kost om een sluisdeur te openen.
+const int door_timer = 60;
+
+const int wait_time = 10;
+
+//Maak een type int[0-4] aan voor 'door_states' dat aantal states moet voorstellen.
+const int MAX_DOOR_STATES = 5;
+typedef int[0, MAX_DOOR_STATES-1] door_state;
+door_state d_state = 0;
+//---------------------------------------------------------------------------------
+
+
+
+
+
+//-------------------------------- SCHEEPVAARTSEIN --------------------------------
+//Maak een type int[0-MAXLIGHTS-1] aan voor 'id_outside_light' dat aantal
+//scheepvaartseinen moet voorstellen.
+const int MAX_LIGHTS = MAX_DOORS; //* 2;
+typedef int[0, MAX_LIGHTS-1] type_id_light;
+
+//Maak kanalen aan om willekeurig met elke scheepvaartsein te kunnen communiceren.
+//chan s_prepare[MAX_LIGHTS];
+//chan s_forbid[MAX_LIGHTS];
+//---------------------------------------------------------------------------------
+
+
+
+//-------------------------- DOOR_LIGHT_CONTROL -----------------------------------
+broadcast chan start_p[MAX_DOORS];
+broadcast chan end_p[MAX_DOORS];
+
+//---------------------------------------------------------------------------------
+
+
+//-------------------------------- NOODSTOP ---------------------------------------
+broadcast chan e_stop;
+broadcast chan e_arm;
+
+//---------------------------------------------------------------------------------
+
+
+//maak een lijst/stack aan met type outside_lights ---&gt; 'int[0,1]' van groote 2
+//id_outside_light outsideLights[2];</declaration>
+	<template>
+		<name x="5" y="5">sluisdeur</name>
+		<parameter>type_id_door id_door</parameter>
+		<declaration>// Place local declarations here.
+clock x;
+
+</declaration>
+		<location id="id0" x="272" y="238">
+			<name x="238" y="255">CLOSING</name>
+			<label kind="invariant" x="230" y="272">x&lt;=door_timer</label>
+		</location>
+		<location id="id1" x="272" y="-238">
+			<name x="238" y="-289">OPENING</name>
+			<label kind="invariant" x="230" y="-272">x&lt;=door_timer</label>
+		</location>
+		<location id="id2" x="509" y="0">
+			<name x="535" y="-8">OPEN</name>
+		</location>
+		<location id="id3" x="34" y="0">
+			<name x="-51" y="-8">CLOSED</name>
+		</location>
+		<init ref="id3"/>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id0"/>
+			<label kind="guard" x="408" y="170">x&gt;=wait_time</label>
+			<label kind="assignment" x="408" y="187">x:=0</label>
+			<nail x="510" y="170"/>
+			<nail x="442" y="238"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id1"/>
+			<label kind="guard" x="85" y="-212">x&gt;=wait_time</label>
+			<label kind="assignment" x="85" y="-195">x:=0</label>
+			<nail x="34" y="-170"/>
+			<nail x="102" y="-238"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id3"/>
+			<label kind="guard" x="76" y="170">x&gt;=door_timer</label>
+			<label kind="assignment" x="76" y="187">x:=0</label>
+			<nail x="102" y="238"/>
+			<nail x="34" y="170"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="guard" x="382" y="-212">x&gt;=door_timer</label>
+			<label kind="assignment" x="382" y="-195">x:=0</label>
+			<nail x="442" y="-238"/>
+			<nail x="510" y="-170"/>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+// Process = Template();
+// List one or more processes to be composed into a system.
+system sluisdeur;
+    </system>
+	<queries>
+		<query>
+			<formula>E&lt;&gt; sluisdeur(0).OPEN or sluisdeur(0).CLOSED</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] not deadlock</formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>
