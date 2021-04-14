@@ -8,13 +8,13 @@ const int pos = 2 * systems; //positions in which a door or hatch can be placed
 const int signal_pos = 4 * systems;
 
 const int max_in_q = 3;
-int[0,max_in_q] in_q_low = 2;
+int[0,max_in_q] in_q_low = 3;
 int[0,max_in_q] in_q_high = 2;
 int[0,systems] in_system = 0;
 int[0,systems] is_changing = 0;
 
 //emergency stop channels
-chan e_stop, e_arm;
+broadcast chan e_stop, e_arm;
 
 //mechanical channels   
 chan hatch_close[pos], hatch_open[pos], door_close[pos], door_open[pos];
@@ -24,7 +24,9 @@ chan prepare[signal_pos], go[signal_pos], nogo[signal_pos];</declaration>
 	<template>
 		<name x="5" y="5">Logic</name>
 		<parameter>int[0,pos-1] low, int[0,pos-1] high, int[0,signal_pos-1] outside_low, int[0,signal_pos-1] inside_low, int[0,signal_pos-1] inside_high, int[0,signal_pos-1] outside_high</parameter>
-		<declaration>bool changing = false;
+		<declaration>clock x;
+bool changing = false;
+int[1,2] status;
 
 void remove_boat_low(){
     if(in_q_low &gt; 0 &amp;&amp; in_system &gt; 0){
@@ -85,143 +87,253 @@ void changing_false(){
 
 
 </declaration>
-		<location id="id0" x="-1700" y="-816">
-			<name x="-1759" y="-850">C_LHC</name>
-		</location>
-		<location id="id1" x="-1360" y="-816">
-			<name x="-1368" y="-799">LDO</name>
-			<label kind="comments" x="-1428" y="-1054">New boat lower</label>
-		</location>
-		<location id="id2" x="-850" y="-816">
-			<name x="-867" y="-799">LDC</name>
-		</location>
-		<location id="id3" x="-680" y="-816">
-			<name x="-688" y="-850">UHO</name>
-		</location>
-		<location id="id4" x="-1020" y="-578">
-			<name x="-1037" y="-561">UHC</name>
-		</location>
-		<location id="id5" x="-1190" y="-578">
-			<name x="-1207" y="-561">UDO</name>
-			<label kind="comments" x="-1249" y="-510">New boat upper</label>
-		</location>
-		<location id="id6" x="-1360" y="-578">
-			<name x="-1377" y="-561">UDC</name>
-		</location>
-		<location id="id7" x="-1530" y="-578">
-			<name x="-1547" y="-612">LHO</name>
-		</location>
-		<location id="id8" x="-1530" y="-816">
+		<location id="id0" x="-1836" y="-884">
+			<name x="-1878" y="-935">Closed_LHC</name>
 			<committed/>
 		</location>
-		<location id="id9" x="-1190" y="-816">
+		<location id="id1" x="-1326" y="-884">
+			<name x="-1292" y="-875">LDO</name>
+			<label kind="comments" x="-1487" y="-1079">New boat lower</label>
 		</location>
-		<location id="id10" x="-1020" y="-816">
+		<location id="id2" x="-816" y="-884">
+			<name x="-833" y="-926">LDC</name>
+		</location>
+		<location id="id3" x="-816" y="-748">
+		</location>
+		<location id="id4" x="-816" y="-544">
+			<name x="-833" y="-527">UHC</name>
+			<committed/>
+		</location>
+		<location id="id5" x="-1326" y="-544">
+			<name x="-1343" y="-527">UDO</name>
+			<label kind="comments" x="-1487" y="-1045">New boat upper</label>
+		</location>
+		<location id="id6" x="-1836" y="-544">
+			<name x="-1853" y="-527">UDC</name>
+		</location>
+		<location id="id7" x="-1836" y="-680">
+		</location>
+		<location id="id8" x="-1666" y="-884">
+		</location>
+		<location id="id9" x="-1156" y="-884">
+		</location>
+		<location id="id10" x="-986" y="-884">
+			<committed/>
+		</location>
+		<location id="id11" x="-986" y="-544">
+		</location>
+		<location id="id12" x="-1496" y="-544">
+		</location>
+		<location id="id13" x="-1666" y="-544">
+			<committed/>
+		</location>
+		<location id="id14" x="-1326" y="-714">
+			<name x="-1300" y="-731">Idle</name>
+		</location>
+		<location id="id15" x="-1496" y="-884">
+		</location>
+		<location id="id16" x="-1156" y="-544">
+		</location>
+		<location id="id17" x="-816" y="-816">
+		</location>
+		<location id="id18" x="-816" y="-680">
+			<name x="-799" y="-697">UHO</name>
+		</location>
+		<location id="id19" x="-816" y="-612">
+		</location>
+		<location id="id20" x="-1836" y="-748">
+			<name x="-1887" y="-765">LHO</name>
+		</location>
+		<location id="id21" x="-1836" y="-816">
+		</location>
+		<location id="id22" x="-1836" y="-612">
 		</location>
 		<init ref="id0"/>
 		<transition>
+			<source ref="id21"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-1810" y="-867">hatch_close[low]?</label>
+		</transition>
+		<transition>
+			<source ref="id20"/>
+			<target ref="id21"/>
+			<label kind="synchronisation" x="-1810" y="-799">hatch_close[low]!</label>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id22"/>
+			<label kind="synchronisation" x="-1810" y="-595">door_close[high]?</label>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-943" y="-595">hatch_close[high]?</label>
+		</transition>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id19"/>
+			<label kind="synchronisation" x="-943" y="-663">hatch_close[high]!</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="-943" y="-867">door_close[low]?</label>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-1300" y="-569">door_open[high]?</label>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-1470" y="-909">door_open[low]?</label>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id5"/>
+			<label kind="guard" x="-1292" y="-697">x&gt;=1</label>
+			<nail x="-1292" y="-680"/>
+			<nail x="-1326" y="-646"/>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-1394" y="-765">x&gt;=1</label>
+			<nail x="-1360" y="-748"/>
+			<nail x="-1326" y="-790"/>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id14"/>
+			<label kind="guard" x="-1615" y="-739">!in_q_low_check() &amp;&amp; !in_q_high_check()</label>
+			<label kind="assignment" x="-1394" y="-697">x:=0</label>
+			<nail x="-1326" y="-646"/>
+			<nail x="-1360" y="-680"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id14"/>
+			<label kind="guard" x="-1615" y="-739">!in_q_low_check() &amp;&amp; !in_q_high_check()</label>
+			<label kind="assignment" x="-1292" y="-765">x:=0</label>
+			<nail x="-1326" y="-790"/>
+			<nail x="-1292" y="-748"/>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-1810" y="-569">nogo[outside_high]!</label>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="-1640" y="-586">door_close[high]!</label>
+			<label kind="assignment" x="-1640" y="-569">in_system++</label>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id16"/>
+			<label kind="guard" x="-1122" y="-603">!changing</label>
+			<label kind="synchronisation" x="-1122" y="-586">door_open[high]!</label>
+			<label kind="assignment" x="-1122" y="-569">remove_boat_low()</label>
+		</transition>
+		<transition>
 			<source ref="id10"/>
 			<target ref="id2"/>
-			<label kind="synchronisation" x="-994" y="-841">nogo[outside_low]!</label>
+			<label kind="synchronisation" x="-960" y="-909">nogo[outside_low]!</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
 			<target ref="id9"/>
-			<label kind="guard" x="-1334" y="-858">in_q_low_check()</label>
-			<label kind="synchronisation" x="-1334" y="-841">go[outside_low]!</label>
+			<label kind="guard" x="-1300" y="-926">in_q_low_check()</label>
+			<label kind="synchronisation" x="-1300" y="-909">go[outside_low]!</label>
 		</transition>
 		<transition>
 			<source ref="id8"/>
-			<target ref="id1"/>
-			<label kind="synchronisation" x="-1513" y="-858">door_open[low]!</label>
-			<label kind="assignment" x="-1513" y="-841">remove_boat_high()</label>
+			<target ref="id15"/>
+			<label kind="guard" x="-1649" y="-943">!changing</label>
+			<label kind="synchronisation" x="-1649" y="-926">door_open[low]!</label>
+			<label kind="assignment" x="-1649" y="-909">remove_boat_high()</label>
 		</transition>
 		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
-			<label kind="guard" x="-1683" y="-977">changing</label>
-			<label kind="synchronisation" x="-1683" y="-960">door_open[low]!</label>
-			<label kind="assignment" x="-1683" y="-943">changing_false()</label>
-			<nail x="-1700" y="-833"/>
-			<nail x="-1700" y="-918"/>
-			<nail x="-1402" y="-918"/>
+			<source ref="id8"/>
+			<target ref="id15"/>
+			<label kind="guard" x="-1657" y="-1045">changing</label>
+			<label kind="synchronisation" x="-1657" y="-1028">door_open[low]!</label>
+			<label kind="assignment" x="-1657" y="-1011">changing_false()</label>
+			<nail x="-1666" y="-901"/>
+			<nail x="-1666" y="-986"/>
+			<nail x="-1538" y="-986"/>
 		</transition>
 		<transition>
 			<source ref="id5"/>
-			<target ref="id6"/>
-			<label kind="guard" x="-1317" y="-739">changing_high_check()</label>
-			<label kind="synchronisation" x="-1317" y="-722">door_close[high]!</label>
-			<label kind="assignment" x="-1317" y="-705">changing_true()</label>
-			<nail x="-1190" y="-680"/>
-			<nail x="-1326" y="-680"/>
+			<target ref="id13"/>
+			<label kind="guard" x="-1623" y="-705">changing_high_check()</label>
+			<label kind="synchronisation" x="-1623" y="-688">door_close[high]!</label>
+			<label kind="assignment" x="-1623" y="-671">changing_true()</label>
+			<nail x="-1394" y="-646"/>
+			<nail x="-1632" y="-646"/>
 		</transition>
 		<transition>
-			<source ref="id4"/>
-			<target ref="id5"/>
-			<label kind="guard" x="-1147" y="-739">changing</label>
-			<label kind="synchronisation" x="-1147" y="-722">door_open[high]!</label>
-			<label kind="assignment" x="-1147" y="-705">changing_false()</label>
-			<nail x="-1020" y="-680"/>
-			<nail x="-1156" y="-680"/>
+			<source ref="id11"/>
+			<target ref="id16"/>
+			<label kind="guard" x="-1122" y="-705">changing</label>
+			<label kind="synchronisation" x="-1122" y="-688">door_open[high]!</label>
+			<label kind="assignment" x="-1122" y="-671">changing_false()</label>
+			<nail x="-986" y="-561"/>
+			<nail x="-986" y="-646"/>
+			<nail x="-1122" y="-646"/>
 		</transition>
 		<transition>
 			<source ref="id1"/>
-			<target ref="id2"/>
-			<label kind="guard" x="-1343" y="-977">changing_low_check()</label>
-			<label kind="synchronisation" x="-1343" y="-960">door_close[low]!</label>
-			<label kind="assignment" x="-1343" y="-943">changing_true()</label>
-			<nail x="-1360" y="-918"/>
-			<nail x="-884" y="-918"/>
+			<target ref="id10"/>
+			<label kind="guard" x="-1300" y="-1045">changing_low_check()</label>
+			<label kind="synchronisation" x="-1300" y="-1028">door_close[low]!</label>
+			<label kind="assignment" x="-1300" y="-1011">changing_true()</label>
+			<nail x="-1326" y="-986"/>
+			<nail x="-1020" y="-986"/>
 		</transition>
 		<transition>
 			<source ref="id7"/>
-			<target ref="id0"/>
-			<label kind="synchronisation" x="-1675" y="-578">hatch_close[low]!</label>
-			<nail x="-1700" y="-579"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="-1810" y="-731">hatch_open[low]?</label>
 		</transition>
 		<transition>
-			<source ref="id6"/>
+			<source ref="id22"/>
 			<target ref="id7"/>
-			<label kind="synchronisation" x="-1487" y="-569">hatch_open[low]!</label>
+			<label kind="synchronisation" x="-1810" y="-663">hatch_open[low]!</label>
 		</transition>
 		<transition>
 			<source ref="id5"/>
-			<target ref="id6"/>
-			<label kind="guard" x="-1317" y="-637">in_q_high_check()</label>
-			<label kind="synchronisation" x="-1317" y="-620">door_close[high]!</label>
-			<label kind="assignment" x="-1317" y="-603">in_system++</label>
+			<target ref="id12"/>
+			<label kind="guard" x="-1470" y="-586">in_q_high_check()</label>
+			<label kind="synchronisation" x="-1470" y="-569">go[outside_high]!</label>
 		</transition>
 		<transition>
 			<source ref="id4"/>
-			<target ref="id5"/>
-			<label kind="guard" x="-1156" y="-637">!changing</label>
-			<label kind="synchronisation" x="-1156" y="-620">door_open[high]!</label>
-			<label kind="assignment" x="-1156" y="-603">remove_boat_low()</label>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="-969" y="-569">prepare[outside_high]!</label>
 		</transition>
 		<transition>
 			<source ref="id3"/>
-			<target ref="id4"/>
-			<label kind="synchronisation" x="-858" y="-603">hatch_close[high]!</label>
-			<nail x="-680" y="-773"/>
-			<nail x="-680" y="-578"/>
-			<nail x="-748" y="-578"/>
+			<target ref="id18"/>
+			<label kind="synchronisation" x="-943" y="-731">hatch_open[high]?</label>
 		</transition>
 		<transition>
-			<source ref="id2"/>
+			<source ref="id17"/>
 			<target ref="id3"/>
-			<label kind="synchronisation" x="-833" y="-841">hatch_open[high]!</label>
+			<label kind="synchronisation" x="-943" y="-799">hatch_open[high]!</label>
 		</transition>
 		<transition>
 			<source ref="id9"/>
 			<target ref="id10"/>
-			<label kind="synchronisation" x="-1164" y="-858">door_close[low]!</label>
-			<label kind="assignment" x="-1164" y="-841">in_system++</label>
+			<label kind="synchronisation" x="-1130" y="-926">door_close[low]!</label>
+			<label kind="assignment" x="-1130" y="-909">in_system++</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
 			<target ref="id8"/>
-			<label kind="guard" x="-1683" y="-858">!changing</label>
-			<label kind="synchronisation" x="-1683" y="-841">prepare[outside_low]!</label>
+			<label kind="synchronisation" x="-1819" y="-909">prepare[outside_low]!</label>
 		</transition>
 	</template>
 	<template>
@@ -231,86 +343,88 @@ void changing_false(){
 
 int[1,2] status;
 </declaration>
-		<location id="id11" x="-204" y="-136">
+		<location id="id23" x="-204" y="-136">
 			<name x="-255" y="-170">Closed</name>
 		</location>
-		<location id="id12" x="136" y="-136">
+		<location id="id24" x="136" y="-136">
 			<name x="153" y="-161">Opening</name>
 			<label kind="invariant" x="153" y="-136">x&lt;=hatch_timer</label>
 		</location>
-		<location id="id13" x="136" y="68">
+		<location id="id25" x="136" y="68">
 			<name x="153" y="42">Open</name>
 		</location>
-		<location id="id14" x="-204" y="68">
+		<location id="id26" x="-204" y="68">
 			<name x="-272" y="42">Closing</name>
 			<label kind="invariant" x="-314" y="59">x&lt;=hatch_timer</label>
 		</location>
-		<location id="id15" x="-34" y="-68">
+		<location id="id27" x="-34" y="-68">
 			<committed/>
 		</location>
-		<location id="id16" x="-34" y="0">
+		<location id="id28" x="-34" y="0">
 			<committed/>
 		</location>
-		<init ref="id11"/>
+		<init ref="id23"/>
 		<transition>
-			<source ref="id16"/>
-			<target ref="id14"/>
+			<source ref="id28"/>
+			<target ref="id26"/>
 			<label kind="assignment" x="-93" y="0">x:=0</label>
 			<nail x="-102" y="0"/>
 		</transition>
 		<transition>
-			<source ref="id13"/>
-			<target ref="id16"/>
-			<label kind="synchronisation" x="68" y="-17">e_stop?</label>
+			<source ref="id25"/>
+			<target ref="id28"/>
+			<label kind="synchronisation" x="68" y="0">e_stop?</label>
 			<nail x="34" y="0"/>
 			<nail x="25" y="0"/>
 			<nail x="25" y="0"/>
 		</transition>
 		<transition>
-			<source ref="id12"/>
-			<target ref="id16"/>
-			<label kind="synchronisation" x="68" y="-17">e_stop?</label>
+			<source ref="id24"/>
+			<target ref="id28"/>
+			<label kind="synchronisation" x="68" y="0">e_stop?</label>
 			<nail x="34" y="0"/>
 		</transition>
 		<transition>
-			<source ref="id14"/>
-			<target ref="id15"/>
-			<label kind="guard" x="-195" y="-68">status==1</label>
-			<label kind="synchronisation" x="-195" y="-51">e_arm?</label>
+			<source ref="id26"/>
+			<target ref="id27"/>
+			<label kind="guard" x="-195" y="-59">status==1</label>
+			<label kind="synchronisation" x="-195" y="-42">e_arm?</label>
 			<nail x="-102" y="-68"/>
 		</transition>
 		<transition>
-			<source ref="id15"/>
-			<target ref="id12"/>
+			<source ref="id27"/>
+			<target ref="id24"/>
 			<label kind="assignment" x="-16" y="-68">x:=0</label>
 			<nail x="34" y="-68"/>
 		</transition>
 		<transition>
-			<source ref="id11"/>
-			<target ref="id15"/>
-			<label kind="guard" x="-195" y="-68">status==1</label>
-			<label kind="synchronisation" x="-195" y="-51">e_arm?</label>
+			<source ref="id23"/>
+			<target ref="id27"/>
+			<label kind="guard" x="-195" y="-59">status==1</label>
+			<label kind="synchronisation" x="-195" y="-42">e_arm?</label>
 			<nail x="-102" y="-68"/>
 		</transition>
 		<transition>
-			<source ref="id14"/>
-			<target ref="id11"/>
-			<label kind="guard" x="-314" y="-51">x&gt;=hatch_timer</label>
+			<source ref="id26"/>
+			<target ref="id23"/>
+			<label kind="guard" x="-306" y="-59">x&gt;=hatch_timer</label>
+			<label kind="synchronisation" x="-323" y="-42">hatch_close[pos]!</label>
 		</transition>
 		<transition>
-			<source ref="id13"/>
-			<target ref="id14"/>
+			<source ref="id25"/>
+			<target ref="id26"/>
 			<label kind="synchronisation" x="-93" y="68">hatch_close[pos]?</label>
 			<label kind="assignment" x="-93" y="85">x:=0, status:=2</label>
 		</transition>
 		<transition>
-			<source ref="id12"/>
-			<target ref="id13"/>
-			<label kind="guard" x="144" y="-51">x&gt;=hatch_timer</label>
+			<source ref="id24"/>
+			<target ref="id25"/>
+			<label kind="guard" x="144" y="-59">x&gt;=hatch_timer</label>
+			<label kind="synchronisation" x="144" y="-42">hatch_open[pos]!</label>
 		</transition>
 		<transition>
-			<source ref="id11"/>
-			<target ref="id12"/>
+			<source ref="id23"/>
+			<target ref="id24"/>
 			<label kind="synchronisation" x="-93" y="-178">hatch_open[pos]?</label>
 			<label kind="assignment" x="-93" y="-161">x:=0, status:=1</label>
 		</transition>
@@ -318,24 +432,24 @@ int[1,2] status;
 	<template>
 		<name>Emergency</name>
 		<declaration>clock x;</declaration>
-		<location id="id17" x="-170" y="-34">
+		<location id="id29" x="-170" y="-34">
 			<name x="-221" y="-68">Ready</name>
 		</location>
-		<location id="id18" x="0" y="-34">
+		<location id="id30" x="0" y="-34">
 			<name x="0" y="-68">Stopped</name>
 		</location>
-		<init ref="id17"/>
+		<init ref="id29"/>
 		<transition>
-			<source ref="id18"/>
-			<target ref="id17"/>
+			<source ref="id30"/>
+			<target ref="id29"/>
 			<label kind="guard" x="-102" y="34">x&gt;=1</label>
 			<label kind="synchronisation" x="-102" y="51">e_arm!</label>
 			<nail x="-34" y="34"/>
 			<nail x="-136" y="34"/>
 		</transition>
 		<transition>
-			<source ref="id17"/>
-			<target ref="id18"/>
+			<source ref="id29"/>
+			<target ref="id30"/>
 			<label kind="synchronisation" x="-102" y="-144">e_stop!</label>
 			<label kind="assignment" x="-102" y="-127">x:=0</label>
 			<nail x="-136" y="-102"/>
@@ -349,78 +463,80 @@ int[1,2] status;
 
 int[1,2] status;
 </declaration>
-		<location id="id19" x="-544" y="-170">
+		<location id="id31" x="-544" y="-170">
 			<name x="-569" y="-213">Closed</name>
 		</location>
-		<location id="id20" x="-374" y="-26">
+		<location id="id32" x="-374" y="-26">
 			<name x="-349" y="-51">Opening</name>
 			<label kind="invariant" x="-349" y="-26">x&lt;=door_timer</label>
 		</location>
-		<location id="id21" x="-544" y="110">
+		<location id="id33" x="-544" y="110">
 			<name x="-536" y="76">Open</name>
 		</location>
-		<location id="id22" x="-714" y="-26">
+		<location id="id34" x="-714" y="-26">
 			<name x="-782" y="-26">Closing</name>
 			<label kind="invariant" x="-816" y="-51">x&lt;=door_timer</label>
 		</location>
-		<location id="id23" x="-544" y="-26">
+		<location id="id35" x="-544" y="-26">
 			<name x="-569" y="-94">Paused</name>
 		</location>
-		<init ref="id19"/>
+		<init ref="id31"/>
 		<transition>
-			<source ref="id22"/>
-			<target ref="id23"/>
+			<source ref="id34"/>
+			<target ref="id35"/>
 			<label kind="synchronisation" x="-654" y="-94">e_stop?</label>
 			<label kind="assignment" x="-654" y="-77">status:=1</label>
 			<nail x="-680" y="-77"/>
 			<nail x="-578" y="-77"/>
 		</transition>
 		<transition>
-			<source ref="id23"/>
-			<target ref="id22"/>
+			<source ref="id35"/>
+			<target ref="id34"/>
 			<label kind="guard" x="-654" y="-9">status==2</label>
 			<label kind="synchronisation" x="-654" y="8">e_arm?</label>
 			<nail x="-578" y="25"/>
 			<nail x="-680" y="25"/>
 		</transition>
 		<transition>
-			<source ref="id20"/>
-			<target ref="id23"/>
+			<source ref="id32"/>
+			<target ref="id35"/>
 			<label kind="synchronisation" x="-484" y="8">e_stop?</label>
 			<label kind="assignment" x="-484" y="-9">status:=1</label>
 			<nail x="-408" y="25"/>
 			<nail x="-510" y="25"/>
 		</transition>
 		<transition>
-			<source ref="id23"/>
-			<target ref="id20"/>
+			<source ref="id35"/>
+			<target ref="id32"/>
 			<label kind="guard" x="-484" y="-111">status==1</label>
 			<label kind="synchronisation" x="-484" y="-94">e_arm?</label>
 			<nail x="-510" y="-77"/>
 			<nail x="-408" y="-77"/>
 		</transition>
 		<transition>
-			<source ref="id22"/>
-			<target ref="id19"/>
-			<label kind="guard" x="-688" y="-196">x&gt;=door_timer</label>
+			<source ref="id34"/>
+			<target ref="id31"/>
+			<label kind="guard" x="-697" y="-212">x&gt;=door_timer</label>
+			<label kind="synchronisation" x="-697" y="-195">door_close[pos]!</label>
 			<nail x="-714" y="-170"/>
 		</transition>
 		<transition>
-			<source ref="id21"/>
-			<target ref="id22"/>
+			<source ref="id33"/>
+			<target ref="id34"/>
 			<label kind="synchronisation" x="-697" y="110">door_close[pos]?</label>
 			<label kind="assignment" x="-697" y="127">x:=0</label>
 			<nail x="-714" y="110"/>
 		</transition>
 		<transition>
-			<source ref="id20"/>
-			<target ref="id21"/>
+			<source ref="id32"/>
+			<target ref="id33"/>
 			<label kind="guard" x="-476" y="110">x&gt;=door_timer</label>
+			<label kind="synchronisation" x="-476" y="127">door_open[pos]!</label>
 			<nail x="-374" y="110"/>
 		</transition>
 		<transition>
-			<source ref="id19"/>
-			<target ref="id20"/>
+			<source ref="id31"/>
+			<target ref="id32"/>
 			<label kind="synchronisation" x="-510" y="-213">door_open[pos]?</label>
 			<label kind="assignment" x="-510" y="-196">x:=0</label>
 			<nail x="-374" y="-170"/>
@@ -430,61 +546,68 @@ int[1,2] status;
 		<name>Signals</name>
 		<parameter>int[0,signal_pos-1] pos</parameter>
 		<declaration>clock x;</declaration>
-		<location id="id24" x="-34" y="136">
-			<name x="-59" y="161">RedRed</name>
+		<location id="id36" x="-374" y="34">
+			<name x="-399" y="59">RedRed</name>
 		</location>
-		<location id="id25" x="-204" y="-34">
-			<name x="-229" y="-68">Red</name>
+		<location id="id37" x="-544" y="-136">
+			<name x="-569" y="-170">Red</name>
 		</location>
-		<location id="id26" x="-34" y="-34">
-			<name x="-68" y="-76">RedGreen</name>
+		<location id="id38" x="-374" y="-136">
+			<name x="-365" y="-178">RedGreen</name>
 		</location>
-		<location id="id27" x="136" y="-34">
-			<name x="136" y="-68">Green</name>
+		<location id="id39" x="-204" y="-136">
+			<name x="-204" y="-170">Green</name>
 		</location>
-		<init ref="id25"/>
+		<init ref="id37"/>
 		<transition>
-			<source ref="id27"/>
-			<target ref="id25"/>
-			<label kind="synchronisation" x="-68" y="-127">nogo[pos]?</label>
-			<nail x="68" y="-102"/>
-			<nail x="-136" y="-102"/>
+			<source ref="id38"/>
+			<target ref="id37"/>
+			<label kind="synchronisation" x="-408" y="-229">nogo[pos]?</label>
+			<nail x="-374" y="-204"/>
+			<nail x="-476" y="-204"/>
 		</transition>
 		<transition>
-			<source ref="id24"/>
-			<target ref="id25"/>
-			<label kind="synchronisation" x="-263" y="8">e_arm?</label>
-			<nail x="-102" y="136"/>
-			<nail x="-204" y="34"/>
+			<source ref="id39"/>
+			<target ref="id37"/>
+			<label kind="synchronisation" x="-408" y="-229">nogo[pos]?</label>
+			<nail x="-272" y="-204"/>
+			<nail x="-476" y="-204"/>
 		</transition>
 		<transition>
-			<source ref="id26"/>
-			<target ref="id27"/>
-			<label kind="synchronisation" x="17" y="-59">go[pos]?</label>
+			<source ref="id36"/>
+			<target ref="id37"/>
+			<label kind="synchronisation" x="-569" y="-26">e_arm?</label>
+			<nail x="-442" y="34"/>
+			<nail x="-544" y="-68"/>
 		</transition>
 		<transition>
-			<source ref="id25"/>
-			<target ref="id26"/>
-			<label kind="synchronisation" x="-170" y="-59">prepare[pos]?</label>
+			<source ref="id38"/>
+			<target ref="id39"/>
+			<label kind="synchronisation" x="-323" y="-161">go[pos]?</label>
 		</transition>
 		<transition>
-			<source ref="id27"/>
-			<target ref="id24"/>
-			<label kind="synchronisation" x="-17" y="85">e_stop?</label>
-			<nail x="34" y="68"/>
-			<nail x="-34" y="68"/>
+			<source ref="id37"/>
+			<target ref="id38"/>
+			<label kind="synchronisation" x="-510" y="-161">prepare[pos]?</label>
 		</transition>
 		<transition>
-			<source ref="id26"/>
-			<target ref="id24"/>
-			<label kind="synchronisation" x="-17" y="85">e_stop?</label>
+			<source ref="id39"/>
+			<target ref="id36"/>
+			<label kind="synchronisation" x="-357" y="-17">e_stop?</label>
+			<nail x="-306" y="-34"/>
+			<nail x="-374" y="-34"/>
 		</transition>
 		<transition>
-			<source ref="id25"/>
-			<target ref="id24"/>
-			<label kind="synchronisation" x="-17" y="85">e_stop?</label>
-			<nail x="-102" y="68"/>
-			<nail x="-34" y="68"/>
+			<source ref="id38"/>
+			<target ref="id36"/>
+			<label kind="synchronisation" x="-357" y="-17">e_stop?</label>
+		</transition>
+		<transition>
+			<source ref="id37"/>
+			<target ref="id36"/>
+			<label kind="synchronisation" x="-357" y="-17">e_stop?</label>
+			<nail x="-442" y="-34"/>
+			<nail x="-374" y="-34"/>
 		</transition>
 	</template>
 	<system>D0 = Door(0);
