@@ -701,11 +701,11 @@ system D0,D1,H0,H1,L1,S0,S1, Queue, Emergency;//,
 </system>
 	<queries>
 		<query>
-			<formula>Emergency.Stopped --&gt; Emergency.Ready</formula>
+			<formula>A&lt;&gt; Emergency.Stopped imply (S1.Red_Red and S0.Red_Red)</formula>
 			<comment></comment>
 		</query>
 		<query>
-			<formula>A&lt;&gt; Emergency.Stopped imply (S1.Red_Red and S0.Red_Red)</formula>
+			<formula>A&lt;&gt; Emergency.Ready imply (H0.Closed and H1.Closed)</formula>
 			<comment></comment>
 		</query>
 		<query>
