@@ -391,7 +391,7 @@ void changing_false(){
 		<parameter>int[0,pos-1] pos</parameter>
 		<declaration>clock x;
 
-int[1,2] status;
+int[1,2] status = 2;
 </declaration>
 		<location id="id26" x="-204" y="-136">
 			<name x="-255" y="-170">Closed</name>
@@ -700,6 +700,74 @@ L1 = Logic(0,1,0,1);
 system D0,D1,H0,H1,L1,S0,S1, Queue, Emergency;//, 
 </system>
 	<queries>
+		<query>
+			<formula>Emergency.Stopped --&gt; Emergency.Ready</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; Emergency.Stopped imply (S1.Red_Red and S0.Red_Red)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; Emergency.Stopped imply (H0.Closing or H0.Closed)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>Emergency.Stopped --&gt; Emergency.Ready NOT READY YET</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; Emergency.Ready</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; (S0.Green imply (not (D0.Opening or D0.Closed or D0.Closing)))</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; (S0.Green imply not S1.Green) and (S1.Green imply S0.Green)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; (H0.Open imply not D1.Open) and (H1.Open imply not D0.Open)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; (H0.Open and L1.x&lt;=level_timer) imply (D0.Closed and D1.Closed and S0.Red and S1.Red)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; H0.Open imply S0.Red</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; not ((D0.Opening or D0.Closing) and S0.Green)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; not (H0.Open and L1.x&gt;=level_timer) and D0.Closed</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; not (H1.Open and L1.x&gt;=level_timer) and D1.Closed</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; not (H0.Open and H1.Open)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; not (D0.Open and D0.Open)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; D0.Closed and D1.Open</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; D0.Open and D1.Closed</formula>
+			<comment></comment>
+		</query>
 		<query>
 			<formula>A[] not deadlock</formula>
 			<comment></comment>
