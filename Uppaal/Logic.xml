@@ -9,8 +9,8 @@ const int pos = 2 * systems; //positions in which a door or hatch can be placed
 const int signal_pos = 4 * systems;
 
 const int max_in_q = 2;
-int[0,max_in_q] in_q_low = 2;
-int[0,max_in_q] in_q_high = 2;
+int[0,max_in_q] in_q_low = 1;
+int[0,max_in_q] in_q_high = 1;
 int[0,systems] in_system = 0;
 int[0,systems] is_changing = 0;
 
@@ -231,7 +231,6 @@ void changing_false(){
 			<source ref="id12"/>
 			<target ref="id13"/>
 			<label kind="synchronisation" x="-1640" y="-586">door_close[high]!</label>
-			<label kind="assignment" x="-1640" y="-569">in_system++</label>
 		</transition>
 		<transition>
 			<source ref="id11"/>
@@ -248,8 +247,9 @@ void changing_false(){
 		<transition>
 			<source ref="id1"/>
 			<target ref="id9"/>
-			<label kind="guard" x="-1300" y="-926">in_q_low_check()</label>
-			<label kind="synchronisation" x="-1300" y="-909">go[outside_low]!</label>
+			<label kind="guard" x="-1300" y="-943">in_q_low_check()</label>
+			<label kind="synchronisation" x="-1300" y="-926">go[outside_low]!</label>
+			<label kind="assignment" x="-1300" y="-909">in_system++</label>
 		</transition>
 		<transition>
 			<source ref="id8"/>
@@ -274,7 +274,7 @@ void changing_false(){
 			<label kind="guard" x="-1623" y="-705">changing_high_check()</label>
 			<label kind="synchronisation" x="-1623" y="-688">door_close[high]!</label>
 			<label kind="assignment" x="-1623" y="-671">changing_true()</label>
-			<nail x="-1394" y="-646"/>
+			<nail x="-1360" y="-646"/>
 			<nail x="-1632" y="-646"/>
 		</transition>
 		<transition>
@@ -310,8 +310,9 @@ void changing_false(){
 		<transition>
 			<source ref="id5"/>
 			<target ref="id12"/>
-			<label kind="guard" x="-1470" y="-586">in_q_high_check()</label>
-			<label kind="synchronisation" x="-1470" y="-569">go[outside_high]!</label>
+			<label kind="guard" x="-1470" y="-612">in_q_high_check()</label>
+			<label kind="synchronisation" x="-1470" y="-595">go[outside_high]!</label>
+			<label kind="assignment" x="-1470" y="-578">in_system++</label>
 		</transition>
 		<transition>
 			<source ref="id4"/>
@@ -333,7 +334,6 @@ void changing_false(){
 			<source ref="id9"/>
 			<target ref="id10"/>
 			<label kind="synchronisation" x="-1130" y="-926">door_close[low]!</label>
-			<label kind="assignment" x="-1130" y="-909">in_system++</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
@@ -391,17 +391,18 @@ void changing_false(){
 		<parameter>int[0,pos-1] pos</parameter>
 		<declaration>clock x;
 
-int[1,2] status;
+int[1,2] status = 2;
+bool stop = false;
 </declaration>
 		<location id="id26" x="-204" y="-136">
 			<name x="-255" y="-170">Closed</name>
 		</location>
 		<location id="id27" x="136" y="-136">
-			<name x="153" y="-161">Opening</name>
-			<label kind="invariant" x="153" y="-136">x&lt;=hatch_timer</label>
+			<name x="153" y="-195">Opening</name>
+			<label kind="invariant" x="153" y="-170">x&lt;=hatch_timer</label>
 		</location>
 		<location id="id28" x="136" y="68">
-			<name x="153" y="42">Open</name>
+			<name x="153" y="76">Open</name>
 		</location>
 		<location id="id29" x="-204" y="68">
 			<name x="-272" y="42">Closing</name>
@@ -414,6 +415,14 @@ int[1,2] status;
 			<committed/>
 		</location>
 		<init ref="id26"/>
+		<transition>
+			<source ref="id27"/>
+			<target ref="id28"/>
+			<label kind="guard" x="280" y="-59">x&gt;=hatch_timer &amp;&amp; stop==true</label>
+			<label kind="assignment" x="280" y="-42">stop:=false</label>
+			<nail x="272" y="-102"/>
+			<nail x="272" y="34"/>
+		</transition>
 		<transition>
 			<source ref="id31"/>
 			<target ref="id29"/>
@@ -444,7 +453,7 @@ int[1,2] status;
 		<transition>
 			<source ref="id30"/>
 			<target ref="id27"/>
-			<label kind="assignment" x="-16" y="-68">x:=0</label>
+			<label kind="assignment" x="-51" y="-119">x:=0, stop:=true</label>
 			<nail x="34" y="-68"/>
 		</transition>
 		<transition>
@@ -697,11 +706,25 @@ S1 = Signals(1);
 
 L1 = Logic(0,1,0,1);
 
-system D0,D1,H0,H1,L1,S0,S1, Queue, Emergency;//, 
+/*
+D2 = Door(2);
+D3 = Door(3);
+
+H2 = Hatch(2);
+H3 = Hatch(3);
+
+S2 = Signals(2);
+S3 = Signals(3);
+
+L2 = Logic(2,3,2,3);
+*/
+
+system D0,D1,H0,H1,L1,S0,S1, Emergency;//, Queue, D2,D3,H2,H3,S2,S3,L2
 </system>
 	<queries>
 		<query>
-			<formula>A[] not deadlock</formula>
+			<formula>A[] not deadlock
+</formula>
 			<comment></comment>
 		</query>
 	</queries>
