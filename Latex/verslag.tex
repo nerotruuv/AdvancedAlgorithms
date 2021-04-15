@@ -128,18 +128,16 @@
             hun originele positie te worden gebracht.
             \item Scheepvaartseinen kunnen ten alle tijden tot een noodstop worden
             gebracht waarbij het sein 'buiten gebruik' aangegeven wordt.
-            \item Bij het resetten van de noodstop dienen de scheepvaartseinen
-            het sein 'verboden voor doorvaart' aan te geven.
         \end{enumerate}
 
-    \subsection{Efficientie}
-        \begin{enumerate}
-            \item Voordat een sluisdeur geopent wordt, dienen de ricketschuiven open 
-            worden gemaakt. \\
-            (\textit{Dit zorgt ervoor dat een deur minder weerstand ervaart. 
-            Echter heeft deze requirement geen toegevoegde waarde om geimplementeerd te worden.})
-            \item De bedieningstijd bij een schutprocess bedraagt niet langer dan 10 minuten.
-        \end{enumerate}
+    % \subsection{Efficientie}
+    %     \begin{enumerate}
+    %         \item Voordat een sluisdeur geopent wordt, dienen de ricketschuiven open 
+    %         worden gemaakt. \\
+    %         (\textit{Dit zorgt ervoor dat een deur minder weerstand ervaart. 
+    %         Echter heeft deze requirement geen toegevoegde waarde om geimplementeerd te worden.})
+    %         \item De bedieningstijd bij een schutprocess bedraagt niet langer dan 10 minuten.
+    %     \end{enumerate}
 %----------------------------------------------------------------------------------
 \newpage
 \section {Specificaties}
@@ -210,63 +208,41 @@
             Deze onderdelen worden gecombineerd met een simulatie voor scheepvaart om uiteindelijk
             tot een werkende model te komen die de werking van de schutsluis simplistisch uitbeeld.
             Dit wordt gedaan in de hoofdmodel waar alle logica van de schutsluis uitgewerkt wordt.
-            \item Per kant worden 3 schepen geschut. Aantal schepen per kant wordt bijgehouden
+            \item Per kant worden 2 schepen geschut. Aantal schepen per kant wordt bijgehouden
             door middel van een getal. Elke keer dat een schip geschut is wordt deze getal verminderd met 1.
             \item Bij het begin toestand geldt voor alle onderdelen dat deze in toestand 'gesloten' bevinden.
-            Voor scheepvaartseinen, deze dienen in de toestand 'verboden voor doorvaart' zich bevinden. 
-            Bij het schutten van de schepen wordt de volgende process voor doorlopen:
+            Voor scheepvaartseinen, deze dienen in de toestand 'verboden voor doorvaart' zich te bevinden. 
+            Bij het schutten van de schepen wordt de volgende process doorlopen:\\
                 \begin{itemize}
-                    \item Scheepvaartsein (laagland) in toestand 'gereed maken voor doorvaart'
+                    \item Scheepvaartsein (laagland) in toestand \\'gereed maken voor doorvaart'
                     \item Sluisdeur (laagland) openen
                     \item Scheepvaartsein (laagland) in toestand 'vrij voor doorvaart'
                     \item Sluisdeur (laagland) sluiten
                     \item Scheepvaartsein (laagland) in toestand 'verboden voor doorvaart'
                     \item Ricketschuif (hoogland) openen
-                    \item Nivelleren
+                    \item Nivelleren: hoogland --\> laagland
                     \item Ricketschuif (hoogland) sluiten
-                    \item Scheepvaartsein (hoogland) in toestand 'gereed maken voor doorvaart'
-                    \item 
+                    \item Scheepvaartsein (hoogland) in toestand \\'gereed maken voor doorvaart'
+                    \item Sluisdeur (hoogland) openen
+                    \item Scheepvaartsein (hoogland) in toestand 'vrij voor doorvaart'
+                    \item Sluisdeur (hoogland) sluiten
+                    \item Ricketschuif (laagland) openen
+                    \item Nivelleren: laagland --\> hoogland
+                    \item Ricketschuif (laagland) sluiten
                 \end{itemize}
         \end{itemize}
     \end{itemize}
-    
-    
-    is er voor gekozen om puntdeuren te modeleren. Puntdeuren zijn 
-    twee deuren die gebruikt kunnen worden bij een ontworpen sluisdeur. Deze zorgen 
-    voor scheiding tussen de kolk en de buiten water. Echter geeft die bij het 
-    modeleren geen toegevoegde waarde gezien exact hetzelfde functionaliteit.
-    Daarom wordt hier dan ook één sluisdeur per sluishoofd gemodelleerd.
-
-
-
-
-    De schutsluis model wordt een simplistische model van Julianasluis 2. Deze model
-    wordt opgebouwd uit volgende onderdelen:
-    
-    \begin{itemize}
-        \item 2x sluisdeur onderdeel \\ 
-        \item 2x scheepvaartsein onderdeel per sluisdeur onderdeel \\ (\textit{})
-        \item 1x ricketschuif onderdeel per sluisdeur onderdeel (\textit{})
-        \item 1x noodstop onderdeel (\textit{})
-        \item 1x logische uitwerking (\textit{})
-    \end{itemize}
-
 
 %----------------------------------------------------------------------------------
 
-
-\section {Modelcriteria op basis van Vaandragen}
-
-%----------------------------------------------------------------------------------
-
-
+\newpage
 \section {Gemodelleerde onderdelen}
     De schutsluis model wordt een simplistische model van Julianasluis 2. Deze model
     wordt opgebouwd uit volgende onderdelen:
 
     \begin{itemize}
         \item 2x sluisdeur onderdeel
-        \item 2x scheepvaartsein onderdeel per sluisdeur onderdeel
+        \item 1x scheepvaartsein onderdeel per sluisdeur onderdeel
         \item 1x ricketschuif onderdeel per sluisdeur onderdeel
         \item 1x noodstop onderdeel
         \item 1x logische uitwerking
@@ -275,38 +251,56 @@
 
 %----------------------------------------------------------------------------------
 
-
+\newpage
 \section {Werking model}
+\noindent
+\makebox[\textwidth]{\includegraphics[width=20cm]{Model.png}}
+
+Het gemaakte model representeert de bediening van een schutsluis. Hierbij is gebruik
+gemaakt van bovengenoemde onderdelen om dat te realiseren. Het model representeert
+een schutprocess waarbij alleen de bediening van de schutsluis is gemodelleerd. Om de
+bediening te kunnen modelleren is er gebruik gemaakt van schepen in de vorm van 
+getallen die continue verhoogt of verlaagt worden.
+
+\noindent Het begin punt van het model is: 
+    \begin{itemize}
+        \item Gesloten sluisdeuren
+        \item Scheepvaartseinen in de toestand 'Rood'
+        \item Gesloten ricketschuiven
+        \item Noodstop is beschikbaar om ingedrukt te worden
+    \end{itemize}
+
+\noindent Na dit moment zal het model autonoom werken waarbij de simulatie process uitgeschreven
+in hoofdstuk \textit{Specificaties} doorgelopen wordt.
 
 %----------------------------------------------------------------------------------
 
-
+\newpage
 \section {Geverifieeerde eigenschappen}
     \centering
-    \begin{tabular}{ |p{4cm}||p{2cm}|p{5cm}|}
+    \begin{tabular}{ |p{4cm}||p{2cm}|p{7cm}|}
         \hline
             Requirements & Geverifieeerd & Formule \\
         \hline
         \hline
-            Sluisdeuren 1 (veiligheid)          &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
-            Sluisdeuren 2 (veiligheid)          &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
-            Sluisdeuren 3 (veiligheid)          &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
-            Sluisdeuren 4 (veiligheid)          &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
-            Ricketschuiven 1 (veiligheid)       &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
-            Ricketschuiven 2 (veiligheid)       &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
-            Ricketschuiven 3 (veiligheid)       &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
-            Scheepvaartseinen 1 (veiligheid)    &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
-            Scheepvaartseinen 2 (veiligheid)    &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
-            Noodstop 1 (veiligheid)             &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
-            Noodstop 2 (veiligheid)             &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
-            Noodstop 3 (veiligheid)             &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
-            Noodstop 4 (veiligheid)             &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
-            Noodstop 5 (veiligheid)             &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
-            Noodstop 6 (veiligheid)             &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
-            Noodstop 7 (veiligheid)             &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
-            Noodstop 8 (veiligheid)             &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
-            1 (efficientie)                     &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
-            2 (efficientie)                     &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
+            Sluisdeuren 1 (veiligheig)                      &           \leavevmode\color[HTML]{32CD32} PASSED          &         E$<>$ not (D9.Open and D0.Open))        \\ \hline
+            Sluisdeuren 2 (veiligheid / bereikbaarheid)     &           \leavevmode\color[HTML]{32CD32} PASSED          &         A$<>$ not (H1.Open and L1.x>=level\_timer) and D1.Closed \\ 
+            &&A$<>$ not (H0.Open and L1.x>=level\_timer) and D0.Closed       \\ \hline
+            Sluisdeuren 3 (veiligheid)                      &           \leavevmode\color[HTML]{32CD32} PASSED          &         A$<>$ not ((D0.Opening or D0.Closing) and S0.Green)        \\ \hline
+            Sluisdeuren 4 (veiligheid)                      &           \leavevmode\color[HTML]{32CD32} PASSED          &         A$<>$ (H0.Open and L1.x<=level\_timer) imply (D0.Closed and D1.Closed and S0.Red and S1.Red)        \\ \hline
+            Ricketschuiven 1 (veiligheid)                   &           \leavevmode\color[HTML]{32CD32} PASSED          &         E$<>$ not (H0.Open and H1.Open)        \\ \hline
+            Ricketschuiven 2 (veiligheid)                   &           \leavevmode\color[HTML]{32CD32} PASSED          &         A$<>$ (H0.Open imply not D1.Open) and (H1.Open imply not D0.Open)        \\ \hline
+            Scheepvaartseinen 1 (veiligheid)                &           \leavevmode\color[HTML]{32CD32} PASSED          &         A$<>$ (S0.Green imply not S1.Green) and (S1.Green imply S0.Green)        \\ \hline
+            Scheepvaartseinen 2 (veiligheid)                &           \leavevmode\color[HTML]{32CD32} PASSED          &         A$<>$ (S0.Green imply (not (D0.Opening or D0.Closed or D0.Closing)))        \\ \hline
+            Noodstop 1 (veiligheid / fairness)              &           \leavevmode\color[HTML]{32CD32} PASSED          &         A$<>$ Emergency.Ready        \\ \hline
+            Noodstop 2 (veiligheid)                         &           \leavevmode\color[HTML]{FF0000} FAILED          &         -        \\ \hline
+            Noodstop 3 (veiligheid)                         &           \leavevmode\color[HTML]{32CD32} PASSED          &         Noodstop 1        \\ \hline
+            Noodstop 4 (veiligheid)                         &           \leavevmode\color[HTML]{FF0000} FAILED          &         -        \\ \hline
+            Noodstop 5 (veiligheid)                         &           \leavevmode\color[HTML]{32CD32} PASSED          &         A$<>$ Emergency.Stopped imply (H0.Closing or H0.Closed)        \\ \hline
+            Noodstop 6 (veiligheid)                         &           \leavevmode\color[HTML]{32CD32} PASSED          &         A$<>$ Emergency.Ready imply (H0.Closed and H1.Closed)        \\ \hline
+            Noodstop 7 (veiligheid)                         &           \leavevmode\color[HTML]{32CD32} PASSED          &         A$<>$ Emergency.Stopped imply (S1.Red\_Red and S0.Red\_Red)\\
+            % 1 (efficientie)                     &           \leavevmode\color[HTML]{FF0000} PASS          &         Test        \\ \hline
+            % 2 (efficientie)                     &           \leavevmode\color[HTML]{FF0000} PASS          &         Test        \\ \hline
         \hline
     \end{tabular}
 

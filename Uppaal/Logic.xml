@@ -723,8 +723,75 @@ system D0,D1,H0,H1,L1,S0,S1, Emergency;//, Queue, D2,D3,H2,H3,S2,S3,L2
 </system>
 	<queries>
 		<query>
-			<formula>A[] not deadlock
-</formula>
+			<formula>A&lt;&gt; Emergency.Stopped imply (S1.Red_Red and S0.Red_Red)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; Emergency.Ready imply (H0.Closed and H1.Closed)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; Emergency.Stopped imply (H0.Closing or H0.Closed)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>Emergency.Stopped --&gt; Emergency.Ready NOT READY YET</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; Emergency.Ready</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; (S0.Green imply (not (D0.Opening or D0.Closed or D0.Closing)))</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; (S0.Green imply not S1.Green) and (S1.Green imply S0.Green)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; (H0.Open imply not D1.Open) and (H1.Open imply not D0.Open)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; (H0.Open and L1.x&lt;=level_timer) imply (D0.Closed and D1.Closed and S0.Red and S1.Red)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; H0.Open imply S0.Red</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; not ((D0.Opening or D0.Closing) and S0.Green)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; not (H0.Open and L1.x&gt;=level_timer) and D0.Closed</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; not (H1.Open and L1.x&gt;=level_timer) and D1.Closed</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; not (H0.Open and H1.Open)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; not (D0.Open and D0.Open)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; D0.Closed and D1.Open</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; D0.Open and D1.Closed</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] not deadlock</formula>
 			<comment></comment>
 		</query>
 	</queries>
