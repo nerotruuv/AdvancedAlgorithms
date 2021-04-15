@@ -1,6 +1,7 @@
 \documentclass{article}
 \usepackage{graphicx} 
 \usepackage[dutch]{babel}
+\usepackage{xcolor}
 \begin{document}
 \sffamily
 \begin{titlepage}
@@ -32,96 +33,223 @@
 %==================================================================================
 \newpage
 \section{Inleiding}
-    Voor Tinlab Advanced Algorithms wordt het methode Model Checking gegeven. Dit
-    onderwerp wordt getoetst door middel van een eindopdracht. Voor deze opdracht 
-    moet een compleet geautomatiseerd model van een sluis worden gemaakt. Vervolgens 
-    is het de bedoeling dat op basis van opgestelde requirements bepaalde eigenschappen 
-    van het model geverifieerd worden. Het doel van dit verslag is het vastleggen 
-    van keuzes die tijdens het process zijn gemaakt, onderbouwing geven op die keuzes,
-    het presenteren van gemaakte model, uitleg geven over de werking van de model en
-    tot slot presenteren van geverifieerde eigenschappen.
+    Voor Tinlab Advanced Algorithms wordt het methode Model Checking gegeven~\cite{modelchecking}. 
+    Dit onderwerp wordt getoetst door middel van een eindopdracht. Het doel van deze 
+    opdracht is een model aan te leveren van een compleet geautomatiseerd sluis. 
+    Daarbij is het de bedoeling dat op basis van opgestelde requirements bepaalde 
+    eigenschappen binnen dit model geverifieerd worden. Dit verslag word geschreven 
+    om de keuzes die tijdens het process zijn gemaakt te onderbouwing en vast te leggen.
+    Hierin is ook te lezen alles over de model en de werking ervan. Tot slot wordt
+    aan het eind van dit verslag geverifieerde eigenschappen gepresenteerd.
 
 %----------------------------------------------------------------------------------
 \newpage
 \section {Requirements}
-    Voor het ontwerpen van een sluis model is er als eerst gekeken naar een algemeen
-    opbouw van Julianasluis 2~\cite{bedienininstructie}. Op basis van deze opbouw is
-    er voor gekozen om een simplistische model ervan te bouwen met volgende
-    onderdelen:
-        \begin{itemize}
-            \item 2x sluisdeur
-            \item 2x scheepvaartsein per sluisdeur
-            \item 1x ricketschuif per sluisdeur
-            \item 1x noodstop
-            \item 1x controle kamer
-        \end{itemize}
+    Voor deze opdracht is gekozen om een model te maken van een schutsluis.
+    Als begin is het handboek voor het ontwerpen van schutsluizen bekeken.~\cite{ontwerpSchutsluizen}.
+    Gezien de wens van de opdrachtgever voor het aanleveren van een model van een
+    geautomatiseerde sluis is er voor gekozen om de volgende functionele eis dat in 
+    het handboek gevonden is als uitgangspunt te nemen voor het opstellen van de 
+    requirements voor deze opdracht. \\
+
+    \textit{"De functionele eisen van een schutsluis zijn primair bedoeld voor de scheepvaart.}
+    \textit{Als belangrijkste algemene functionele eis geldt dat de scheepvaart zodanig \textbf{snel} en 
+    \textbf{veilig} de sluis moet kunnen passeren."} \\
+
+    \noindent Voor deze opdracht wordt dus ook een schutsluis gemodelleerd die zo velig mogelijk functioneert zonder dat deze de scheepvaart belemert.
+    Om dit te kunnen doen is hierbij als eerst gekeken naar een document waarbij algemeen 
+    opbouw van Julianasluis 2 beschreven wordt om een opbouw van een schutsluis beter te begrijpen~\cite{bedienininstructie}. 
+    Op basis van deze opbouw is er voor gekozen om een simplistische model ervan te bouwen. 
+    Een simplistische model wordt gebruikt om ervoor te zorgen dat bij het modeleren de focus 
+    vooral ligt op de kernfunctionaliteiten. Zo kunnen de veiligeisen die betrekking hebben 
+    tot de functionaliteit dan ook geverifieerd worden. \\
     
-    \noindent Voordat een model met opgenoemde onderdelen opgesteld wordt, wordt er als 
-    eerst naar een functionele omschrijving sluitprocess gekeken~\cite{functioneel}. 
-    Daaruit is een basis begrip verkregen van hoe zo'n sluis functioneert. In dit
+    \noindent Voordat een model opgesteld wordt, wordt er als 
+    eerst naar een functionele omschrijving sluitprocess gekeken te vinden in artikel~\cite{functioneel}. 
+    Daaruit is informatie verkregen over functionering van een sluisprocess. In dit
     document zijn ook aanvullende functionele eisen gevonden wat betreft het 
     veiligheid. Deze eisen worden gebruikt als basis om te indentificeren welke 
     risico's er tijdens een sluitprocess bestaan. Tot slot wordt met behulp van
-    deze informatie eigen veiligheideisen opgesteld.
+    deze informatie eigen veiligheideisen geformuleerd.
     
-    \subsection{Veiligheid}
+    \newpage
+    \subsection{Veiligheidseisen}
         \textit{Sluisdeuren}
-        \begin{itemize}
+        \begin{enumerate} 
+            \item Ten alle tijden mag er maar één sluisdeur open zijn. \\
+            (\textit{De reden hiervoor is zodat het waterhoogteverschil altijd behouden wordt.})
+            \item Een sluisdeur mag alleen open als de waterniveau aan beiden 
+            kanten van de sluisdeur gelijk is. \\
+            (\textit{Dit is een belangrijke veiligheideis om ongecontroleerde water verplaatsing te voorkomen, waarbij mogelijk letsel zou kunnen onstaan.})
+            \item Ten alle tijden mag een deur alleen aangedreven worden als het
+            invaarsein het sein 'verboden voor doorvaart' of 'sperren' aangeeft.
+            \item Tijdens het nivelleren dienen ten alle tijden de sluisdeuren 
+            gesloten te zijn en scheepvaartseinen het sein 'verboden voor doorvaart'
+            aangeven. \\
+            \textit{(Dit is nodig om ongeschaad een schip van een waterhoogteniveau naar een ander
+            waterhoogteniveau te brengen.})
+        \end{enumerate}
+
+        \noindent\textit{Ricketschuiven}
+        \begin{enumerate}
+            \item Ten alle tijden mag een ricketschuif alleen open als de ricketschuif
+            in de tegenovergestelde sluisdeur gesloten is. \\
+            (\textit{Dit voorkomt de situatie waarbij er verbinding is tussen hoogland en laagland water.})
+            \item Ten alle tijden mag een ricketschuif alleen open als de tegenovergestelde
+            sluisdeur gesloten is. \\
+            (\textit{Dit zorgt ervoor dat waterhoogteniveau veilig aangepast kan worden.})
+        \end{enumerate}
+
+        \noindent\textit{Scheepvaartseinen}
+        \begin{enumerate}
+            \item Ten alle tijden mag er maar aan één kant een scheepvaartsein het sein
+            'vrij voor doorvaart' aangeven. \\
+            (\textit{Dit voorkomt miscommunicatie en zorgt voor snel en veilige scheepvaart verkeer.})
+            \item Ten alle tijden mag het scheepvaartsein 'vrij voor doorvaart' alleen 
+            worden afgegeven als de betrokken sluisdeur volledig geopent is. \\
+            (\textit{Dit zorgt ervoor dat schepen veilig het sluis binnen kunnen varen of verlaten zonder mogelijke ongelukken.})
+        \end{enumerate}
+
+        \newpage
+        \noindent\textit{Noodstop}
+        \begin{enumerate}
+            \item Ten alle tijden kan een noodstop worden ingeschakkeld. \\
+            (\textit{Noodstop zorgt ervoor dat alle componenten per direct gestopt/uitgezet worden.})
+            \item Na het indrukken van de noodstop moet deze ook weer gereset kunnen worden.
             \item Sluisdeuren moet ten alle tijden tot een noodstop kunnen worden
             gebracht.
             \item Na het resetten van de noodstop dienen de sluisdeuren te hervatten
-            met de onderbroken process.
-            \item Ten alle tijden mag er maar één sluisdeur open zijn.
-            \item Een sluisdeur mag alleen open als de waterniveau aan beiden 
-            kanten van de sluisdeur gelijk is.
-            \item Ten alle tijden mag een deur alleen aangedreven worden als het
-            invaarsein het sein "verboden voor doorvaart" of "sperren" aangeeft.
-            \item Tijdens het nivelleren dienen ten alle tijden de sluisdeuren 
-            gesloten te zijn en scheepvaartseinen het sein 'verboden voor doorvaart' 
-            aangeven.
-        \end{itemize}
-
-        \noindent\textit{Ricketschuiven}
-        \begin{itemize}
+            met de onderbroken process. \\
+            (\textit{Er is afweging gemaakt voor een simplistisch model,
+            daarom wordt deze requirement dan ook niet geimplementeerd en dus ook niet geverifieerd.})
             \item Ricketschuiven moeten ten alle tijden tot een noodstop kunnen worden 
             gebracht waarbij de ricketschuiven per direct dienen te sluiten.
             \item Na het resetten van de noodstop dienen de ricketschuiven naar 
             hun originele positie te worden gebracht.
-            \item Ten alle tijden mag er maar één ricketschuif open worden gemaakt.
-            \item Ten alle tijden mag een ricketschuif alleen open als de tegenovergestelde
-            sluisdeur gesloten is.
-            \item Ten alle tijden mag een ricketschuif alleen open als de ricketschuif
-            aan de tegenovergestelde sluisdeur gesloten is.
-        \end{itemize}
-
-        \noindent\textit{Scheepvaartseinen}
-        \begin{itemize}
             \item Scheepvaartseinen kunnen ten alle tijden tot een noodstop worden
             gebracht waarbij het sein 'buiten gebruik' aangegeven wordt.
             \item Bij het resetten van de noodstop dienen de scheepvaartseinen
             het sein 'verboden voor doorvaart' aan te geven.
-            \item Ten alle tijden mag er maar aan één kant een scheepvaartsein het sein
-            'vrij voor doorvaart' aangeven.
-            \item Ten alle tijden mag het scheepvaartsein "vrij voor doorvaart" alleen 
-            worden afgegeven als de betrokken sluisdeur volledig geopent is.
-        \end{itemize}
+        \end{enumerate}
 
-        \noindent\textit{Noodstop}
-        \begin{itemize}
-            \item Ten alle tijden kan een noodstop worden ingeschakkeld.
-            \item Na het indrukken van de noodstop moet deze uiteindelijk gereset worden.
-        \end{itemize}
-
-    \newpage
     \subsection{Efficientie}
-        \begin{itemize}
-            \item De schutting process mag niet langer dan 30 minuten duren.
-            \item Een boot kan alleen geschut worden als de waterniveau binnen de
-            sluis gelijk is aan de waterniveau waar de boot vandaan komt.
-        \end{itemize}
+        \begin{enumerate}
+            \item Voordat een sluisdeur geopent wordt, dienen de ricketschuiven open 
+            worden gemaakt. \\
+            (\textit{Dit zorgt ervoor dat een deur minder weerstand ervaart. 
+            Echter heeft deze requirement geen toegevoegde waarde om geimplementeerd te worden.})
+            \item De bedieningstijd bij een schutprocess bedraagt niet langer dan 10 minuten.
+        \end{enumerate}
 %----------------------------------------------------------------------------------
 \newpage
 \section {Specificaties}
+    Voor deze opdracht worden twee sluishoofden gemodelleerd zodat deze 
+    samen een schutsluis vormen. Zo kan dan ook vooral de focus liggen bij 
+    veilig functioneren. Per sluishoofd zijn de volgende keuzes gemaakt: \\
+    \begin{itemize}
+        \item \textit{Sluisdeur}
+        \begin{itemize}
+            \item Voor de sluisdeur is er gekozen om model te maken van puntdeuren.
+            Dit zijn twee deuren die gebruikt kunnen worden voor scheiding tussen 
+            de kolk en de buitenwater. Om dit model simpel te maken wordt hierbij 
+            één deur gemodelleerd die het twee delige puntdeuren representeert.
+            (\textit{Gezien identieke functionaliteit heeft het geen zin om twee 
+            keer deze deur te gaan modeleren.})
+            \item Een sluisdeur bestaat uit 4 toestanden en 1 noodtoestand.
+            De toestanden zijn 'openen', 'open', 'sluiten', 'gesloten' en als
+            laatste is er ook nog een 'noodtoestand'.
+            \item Openen en sluiten van de sluisdeur wordt door middel van een timer
+            bijgehouden. Het sluiten of openen van de sluisdeur duurt 1 minuut.
+            \item Om aan \textit{Noodstop} requirement 4 te voldoen wordt het openen
+            of sluiten van de sluisdeur bijgehouden door middel van een status variabele.
+        \end{itemize}
+        
+        \item \textit{Ricketschuif}
+        \begin{itemize}
+            \item Voor de nivelleermiddel is er keuze gemaakt om een ricketschuif
+            ervoor te modeleren. Een ricketschuif is een opening in een sluisdeur
+            dat de waterpeil in de kolk kan controleren.
+            \item Een ricketschuif bestaat uit 4 toestanden. De toestanden zijn 'openen', 
+            'open', 'sluiten' en 'gesloten'. Gezien \textit{Noodstop} requirement 5 en 6
+            worden 2 extra tussen toestanden gebruikt om de ricketschuif naar de betreffende
+            toestand te kunnen brengen.
+            \item Openen en sluiten van de ricketschuif wordt door middel van een timer
+            bijgehouden. Het sluiten of openen van de ricketschuif duurt minder dan 1 minuut.
+            \item Om aan \textit{Noodstop} requirement 5 en 6 te voldoen wordt het openen
+            of sluiten van de ricketschuif bijgehouden door middel van een status variabele.
+        \end{itemize}
+
+        \item \textit{Scheepvaartsein}
+        \begin{itemize}
+            \item Voor de scheepvaartsein is gekozen om per sluisdeur twee scheepvaartseinen 
+            te modeleren. Één voor buiten de sluis en één voor binnen de sluis. Hierbij wordt 
+            één model voor twee verschillende scheepvaartseinen gebruikt met een variabele
+            verschill in de 'noodtoestand' waar voor de binneste geld sein is 'uit' en de 
+            buiteste het sein is 'buiten gebruik'. 
+            \item De scheepvaartsein bestaat uit 3 toestanden en een 1 noodtoestand. Deze zijn
+            als volgt gedefineerd:
+                \begin{itemize}
+                    \item 'buiten gebruik'/'noodtoestand' = Rood Rood / Uit
+                    \item 'verboden voor doorvaart' = Rood
+                    \item 'gereed maken voor doorvaart' = Rood Groen
+                    \item 'vrij voor doorvaart' = Groen
+                \end{itemize}
+        \end{itemize}
+
+        \item \textit{Noodstop}
+        \begin{itemize}
+            \item Voor de noodstop is gekozen om een model te maken van een drukknop die 
+            na het drukken weer gereset moet worden naar zijn originele positie.
+            \item Op het moment dat de noodstop is ingedrukt, moeten alle onderdelen per 
+            direct in voor hun betreffende noodtoestand gaan.
+        \end{itemize}
+
+        \item \textit{Simulatie}
+        \begin{itemize}
+            \item Om een schutsluis te kunnen simuleren worden de besproken onderdelen gemaakt.
+            Deze onderdelen worden gecombineerd met een simulatie voor scheepvaart om uiteindelijk
+            tot een werkende model te komen die de werking van de schutsluis simplistisch uitbeeld.
+            Dit wordt gedaan in de hoofdmodel waar alle logica van de schutsluis uitgewerkt wordt.
+            \item Per kant worden 3 schepen geschut. Aantal schepen per kant wordt bijgehouden
+            door middel van een getal. Elke keer dat een schip geschut is wordt deze getal verminderd met 1.
+            \item Bij het begin toestand geldt voor alle onderdelen dat deze in toestand 'gesloten' bevinden.
+            Voor scheepvaartseinen, deze dienen in de toestand 'verboden voor doorvaart' zich bevinden. 
+            Bij het schutten van de schepen wordt de volgende process voor doorlopen:
+                \begin{itemize}
+                    \item Scheepvaartsein (laagland) in toestand 'gereed maken voor doorvaart'
+                    \item Sluisdeur (laagland) openen
+                    \item Scheepvaartsein (laagland) in toestand 'vrij voor doorvaart'
+                    \item Sluisdeur (laagland) sluiten
+                    \item Scheepvaartsein (laagland) in toestand 'verboden voor doorvaart'
+                    \item Ricketschuif (hoogland) openen
+                    \item Nivelleren
+                    \item Ricketschuif (hoogland) sluiten
+                    \item Scheepvaartsein (hoogland) in toestand 'gereed maken voor doorvaart'
+                    \item 
+                \end{itemize}
+        \end{itemize}
+    \end{itemize}
+    
+    
+    is er voor gekozen om puntdeuren te modeleren. Puntdeuren zijn 
+    twee deuren die gebruikt kunnen worden bij een ontworpen sluisdeur. Deze zorgen 
+    voor scheiding tussen de kolk en de buiten water. Echter geeft die bij het 
+    modeleren geen toegevoegde waarde gezien exact hetzelfde functionaliteit.
+    Daarom wordt hier dan ook één sluisdeur per sluishoofd gemodelleerd.
+
+
+
+
+    De schutsluis model wordt een simplistische model van Julianasluis 2. Deze model
+    wordt opgebouwd uit volgende onderdelen:
+    
+    \begin{itemize}
+        \item 2x sluisdeur onderdeel \\ 
+        \item 2x scheepvaartsein onderdeel per sluisdeur onderdeel \\ (\textit{})
+        \item 1x ricketschuif onderdeel per sluisdeur onderdeel (\textit{})
+        \item 1x noodstop onderdeel (\textit{})
+        \item 1x logische uitwerking (\textit{})
+    \end{itemize}
 
 
 %----------------------------------------------------------------------------------
@@ -133,6 +261,17 @@
 
 
 \section {Gemodelleerde onderdelen}
+    De schutsluis model wordt een simplistische model van Julianasluis 2. Deze model
+    wordt opgebouwd uit volgende onderdelen:
+
+    \begin{itemize}
+        \item 2x sluisdeur onderdeel
+        \item 2x scheepvaartsein onderdeel per sluisdeur onderdeel
+        \item 1x ricketschuif onderdeel per sluisdeur onderdeel
+        \item 1x noodstop onderdeel
+        \item 1x logische uitwerking
+    \end{itemize}
+
 
 %----------------------------------------------------------------------------------
 
@@ -143,6 +282,33 @@
 
 
 \section {Geverifieeerde eigenschappen}
+    \centering
+    \begin{tabular}{ |p{4cm}||p{2cm}|p{5cm}|}
+        \hline
+            Requirements & Geverifieeerd & Formule \\
+        \hline
+        \hline
+            Sluisdeuren 1 (veiligheid)          &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
+            Sluisdeuren 2 (veiligheid)          &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
+            Sluisdeuren 3 (veiligheid)          &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
+            Sluisdeuren 4 (veiligheid)          &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
+            Ricketschuiven 1 (veiligheid)       &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
+            Ricketschuiven 2 (veiligheid)       &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
+            Ricketschuiven 3 (veiligheid)       &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
+            Scheepvaartseinen 1 (veiligheid)    &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
+            Scheepvaartseinen 2 (veiligheid)    &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
+            Noodstop 1 (veiligheid)             &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
+            Noodstop 2 (veiligheid)             &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
+            Noodstop 3 (veiligheid)             &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
+            Noodstop 4 (veiligheid)             &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
+            Noodstop 5 (veiligheid)             &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
+            Noodstop 6 (veiligheid)             &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
+            Noodstop 7 (veiligheid)             &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
+            Noodstop 8 (veiligheid)             &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
+            1 (efficientie)                     &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
+            2 (efficientie)                     &           \leavevmode\color[HTML]{32CD32} PASS          &         Test        \\ \hline
+        \hline
+    \end{tabular}
 
 %----------------------------------------------------------------------------------
 
